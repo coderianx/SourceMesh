@@ -6,6 +6,7 @@ sourcemesh
 sourcemesh-backend
 
 # Ortam dosyaları (gizli anahtar içerir)
+backend/.env
 .env
 .env.*
 

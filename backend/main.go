@@ -20,6 +20,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Connect redis
+	store.ConnectRedis()
 	// Connect database
 	store.ConnectPostresql()
 	// Create tables
