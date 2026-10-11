@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SourceMesh logosu">
+  <defs>
+    <linearGradient id="sm-tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E4E4E7"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="48" height="48" rx="13" fill="url(#sm-tile)" stroke="rgba(0,0,0,0.15)" stroke-width="1"/>
+  <g fill="none" stroke="#111113" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.5">
+    <path d="M30.5 24.5 C30.5 21.2 27 19 23 19 C18.5 19 15.5 21 15.5 24.8 C15.5 28.3 19 29.8 23 30.6 L25 31 C29 31.8 31.5 33.3 31.5 37.2 C31.5 41 27.5 43.2 23 43.2 C19.5 43.2 16.5 41.8 15.8 39"/>
+    <path d="M30 43 L30 21 L39 31.5 L48 21 L48 43"/>
+  </g>
+</svg>

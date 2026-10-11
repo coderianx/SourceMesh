@@ -1,0 +1,27 @@
+# Go derleme çıktıları
+*.exe
+*.out
+/bin/
+sourcemesh
+sourcemesh-backend
+
+# Ortam dosyaları (gizli anahtar içerir)
+.env
+.env.*
+
+# Node (frontend/.gitignore ek olarak bunları kapsar)
+node_modules/
+dist/
+build/
+
+# Loglar
+*.log
+
+# İşletim sistemi
+.DS_Store
+Thumbs.db
+
+# Editör
+.idea/
+*.swp
+*.swo

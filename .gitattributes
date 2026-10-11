@@ -1,0 +1,5 @@
+# GitHub dil istatistiğine girmesini istemediğimiz dosyalar
+# (vendored sayılan dosyalar dil çubuğunda görünmez)
+*.html linguist-vendored
+*.svg linguist-vendored
+package-lock.json linguist-vendored
