@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Check } from 'lucide-react';
 import AuthLayout from './AuthLayout.jsx';
+import { t } from '../lib/i18n.js';
 
 const USERNAME_MAX = 20;
 const PASSWORD_MIN = 6;
 
-const STATUS_MESSAGES = {
-  400: 'Girdiğin bilgiler geçersiz.',
-  409: 'Bu kullanıcı adı zaten alınmış.',
-  429: 'Çok fazla deneme yaptın. Biraz sonra tekrar dene.',
-  500: 'Sunucuda bir hata oluştu. Tekrar dene.',
+const STATUS_KEYS = {
+  400: 'Invalid info submitted.',
+  409: 'This username is already taken.',
+  429: "You've tried too many times. Try again a bit later.",
+  500: 'A server error occurred. Try again.',
 };
 
 export default function Register() {
@@ -20,7 +21,7 @@ export default function Register() {
   const [created, setCreated] = useState(false);
 
   useEffect(() => {
-    document.title = 'Kayıt — SourceMesh';
+    document.title = t('Create account — SourceMesh');
   }, []);
 
   async function handleSubmit(event) {
@@ -30,17 +31,17 @@ export default function Register() {
     const name = username.trim();
 
     if (!name) {
-      setError('Kullanıcı adı gerekli.');
+      setError(t('Username is required.'));
       return;
     }
 
     if (name.length > USERNAME_MAX) {
-      setError(`Kullanıcı adı en fazla ${USERNAME_MAX} karakter olabilir.`);
+      setError(t('Username can be at most {max} characters.', { max: USERNAME_MAX }));
       return;
     }
 
     if (password.length < PASSWORD_MIN) {
-      setError(`Şifre en az ${PASSWORD_MIN} karakter olmalı.`);
+      setError(t('Password must be at least {min} characters.', { min: PASSWORD_MIN }));
       return;
     }
 
@@ -63,16 +64,16 @@ export default function Register() {
 
       if (!response.ok) {
         setError(
-          STATUS_MESSAGES[response.status] ||
+          (STATUS_KEYS[response.status] && t(STATUS_KEYS[response.status])) ||
             data.error ||
-            'Kayıt tamamlanamadı. Lütfen tekrar dene.',
+            t('Registration could not be completed. Please try again.'),
         );
         return;
       }
 
       setCreated(true);
     } catch {
-      setError('Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.');
+      setError(t('The server could not be reached. Check your connection and try again.'));
     } finally {
       setLoading(false);
     }
@@ -80,11 +81,10 @@ export default function Register() {
 
   return (
     <AuthLayout>
-      <span className="eyebrow">kayıt</span>
-      <h1>Hesabını oluştur</h1>
+      <span className="eyebrow">{t('sign up')}</span>
+      <h1>{t('Create your account')}</h1>
       <p className="auth-sub">
-        Kullanıcı adını ve şifreni belirle, ağa katıl. Ücretsiz ve tamamen açık
-        kaynak.
+        {t('Set a username and password and join the network. Free and fully open source.')}
       </p>
 
       {created ? (
@@ -92,21 +92,21 @@ export default function Register() {
           <span className="auth-done-icon" aria-hidden="true">
             <Check />
           </span>
-          <h2>Hesabın hazır</h2>
-          <p>Artık ağın bir düğümüsün. Akışta görüşürüz.</p>
+          <h2>{t('Your account is ready')}</h2>
+          <p>{t("You're now a node of the network. See you in the feed.")}</p>
           <div className="auth-actions">
             <a href="/login" className="btn btn-primary">
-              Giriş yap
+              {t('Sign in')}
             </a>
             <a href="/" className="btn btn-secondary">
-              Ana sayfa
+              {t('Home')}
             </a>
           </div>
         </div>
       ) : (
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
           <label className="field">
-            <span>Kullanıcı adı</span>
+            <span>{t('Username')}</span>
             <input
               type="text"
               name="username"
@@ -115,12 +115,12 @@ export default function Register() {
               required
               value={username}
               onChange={(event) => setUsername(event.target.value)}
-              placeholder="kullanici_adi"
+              placeholder="username"
             />
           </label>
 
           <label className="field">
-            <span>Şifre</span>
+            <span>{t('Password')}</span>
             <input
               type="password"
               name="password"
@@ -129,7 +129,7 @@ export default function Register() {
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="en az 6 karakter"
+              placeholder={t('at least {min} characters', { min: PASSWORD_MIN })}
             />
           </label>
 
@@ -145,13 +145,13 @@ export default function Register() {
             disabled={loading}
             aria-busy={loading}
           >
-            {loading ? 'Oluşturuluyor…' : 'Hesap Oluştur'}
+            {loading ? t('Creating…') : t('Create Account')}
           </button>
 
-          <p className="auth-note">ücretsiz · açık kaynak · REST API</p>
+          <p className="auth-note">{t('free · open source · REST API')}</p>
 
           <p className="auth-alt">
-            Zaten hesabın var mı? <a href="/login">Giriş yap</a>
+            {t('Already have an account?')} <a href="/login">{t('Sign in')}</a>
           </p>
         </form>
       )}

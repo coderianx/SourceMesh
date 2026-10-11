@@ -7,6 +7,9 @@ import Profile from './components/Profile.jsx'
 import PublicProfile from './components/PublicProfile.jsx'
 import Register from './components/Register.jsx'
 import { isAuthenticated } from './lib/auth.js'
+import { getLanguage } from './lib/i18n.js'
+
+document.documentElement.lang = getLanguage()
 
 const ROUTES = {
   '/login': Login,

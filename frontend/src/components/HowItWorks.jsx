@@ -1,18 +1,20 @@
+import { t } from '../lib/i18n.js';
+
 const STEPS = [
   {
     num: '01',
-    title: 'Hesap oluştur',
-    text: 'Kullanıcı adı ve şifre yeterli. E-posta doğrulaması istemez.',
+    title: t('Create an account'),
+    text: t('Username and password are enough. No email verification required.'),
   },
   {
     num: '02',
-    title: 'Oturum aç',
-    text: 'Girişten sonra profil sayfana yönlendirilirsin.',
+    title: t('Sign in'),
+    text: t('After signing in you are redirected to your profile page.'),
   },
   {
     num: '03',
-    title: 'Meshflow paylaş',
-    text: 'İlk paylaşımını oluştur; profilinde listelenmeye başlasın.',
+    title: t('Share a meshflow'),
+    text: t('Create your first post and let it show up on your profile.'),
   },
 ];
 
@@ -27,9 +29,9 @@ export default function HowItWorks() {
     <section className="section" id="nasil-calisir" aria-labelledby="nasil-calisir-title">
       <div className="container">
         <div className="section-head">
-          <span className="eyebrow">nasıl çalışır</span>
-          <h2 id="nasil-calisir-title">Üç adımda başla</h2>
-          <p>Kayıt formu yormaz, hesabın hemen hazır olur.</p>
+          <span className="eyebrow">{t('how it works')}</span>
+          <h2 id="nasil-calisir-title">{t('Start in three steps')}</h2>
+          <p>{t('The sign-up form is not tiring, your account is ready right away.')}</p>
         </div>
 
         <div className="steps">
@@ -43,7 +45,7 @@ export default function HowItWorks() {
         </div>
 
         <div className="install">
-          <div className="install-head">yerel kurulum</div>
+          <div className="install-head">{t('local setup')}</div>
           <div className="codeblock">
             {SETUP.map((cmd) => (
               <span key={cmd} className="code-line">
@@ -53,8 +55,9 @@ export default function HowItWorks() {
             ))}
           </div>
           <p className="install-note">
-            Backend için PostgreSQL ve Redis gerekir; bağlantı bilgileri .env
-            dosyasından okunur.
+            {t(
+              'The backend needs PostgreSQL and Redis; connection details are read from the .env file.',
+            )}
           </p>
         </div>
       </div>

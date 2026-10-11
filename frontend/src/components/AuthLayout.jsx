@@ -1,6 +1,8 @@
 import { ArrowLeft } from 'lucide-react';
+import SettingsMenu from './SettingsMenu.jsx';
 import logo from '../assets/logo.svg';
 import '../App.css';
+import { t } from '../lib/i18n.js';
 
 export default function AuthLayout({ children }) {
   return (
@@ -11,10 +13,13 @@ export default function AuthLayout({ children }) {
             <img src={logo} alt="" width="28" height="28" className="brand-logo" />
             SourceMesh
           </a>
-          <a href="/" className="auth-home">
-            <ArrowLeft aria-hidden="true" />
-            Ana sayfa
-          </a>
+          <div className="auth-top-actions">
+            <SettingsMenu />
+            <a href="/" className="auth-home">
+              <ArrowLeft aria-hidden="true" />
+              {t('Home')}
+            </a>
+          </div>
         </div>
       </header>
 

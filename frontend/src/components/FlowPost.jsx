@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { MessageSquare } from 'lucide-react';
 import LikeButton from './LikeButton.jsx';
 import { formatDate } from '../lib/format.js';
+import { t } from '../lib/i18n.js';
 
 export default function FlowPost({ username, flow, children }) {
   const [commentsOpen, setCommentsOpen] = useState(false);
@@ -33,7 +34,7 @@ export default function FlowPost({ username, flow, children }) {
               onClick={() => setCommentsOpen((value) => !value)}
             >
               <MessageSquare aria-hidden="true" />
-              Yorumlar
+              {t('Comments')}
             </button>
           )}
         </div>

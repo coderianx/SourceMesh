@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import GithubIcon from './GithubIcon.jsx';
+import SettingsMenu from './SettingsMenu.jsx';
 import logo from '../assets/logo.svg';
+import { t } from '../lib/i18n.js';
 
 const LINKS = [
-  { href: '#ozellikler', label: 'Özellikler' },
-  { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
-  { href: '#acik-kaynak', label: 'Açık Kaynak' },
+  { href: '#ozellikler', label: t('Features') },
+  { href: '#nasil-calisir', label: t('How It Works') },
+  { href: '#acik-kaynak', label: t('Open Source') },
 ];
 
 export default function Navbar() {
@@ -40,11 +42,12 @@ export default function Navbar() {
               <GithubIcon />
               GitHub
             </a>
+            <SettingsMenu />
             <a href="/login" className="btn btn-ghost">
-              Giriş Yap
+              {t('Sign In')}
             </a>
             <a href="/register" className="btn btn-primary nav-cta">
-              Hemen Katıl
+              {t('Create Account')}
             </a>
             <button
               type="button"
@@ -69,10 +72,10 @@ export default function Navbar() {
         </nav>
         <div className="mobile-actions">
           <a href="/login" className="btn btn-secondary" style={{ flex: 1 }}>
-            Giriş Yap
+            {t('Sign In')}
           </a>
           <a href="/register" className="btn btn-primary" style={{ flex: 1 }}>
-            Hemen Katıl
+            {t('Create Account')}
           </a>
         </div>
       </div>

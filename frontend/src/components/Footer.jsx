@@ -1,5 +1,6 @@
 import GithubIcon from './GithubIcon.jsx';
 import logo from '../assets/logo.svg';
+import { t } from '../lib/i18n.js';
 
 export default function Footer() {
   return (
@@ -11,8 +12,9 @@ export default function Footer() {
             SourceMesh
           </a>
           <p>
-            Geliştiriciler için açık kaynaklı sosyal ağ. Paylaş, sergile, bağ
-            kur — toplulukla birlikte büyüyor.
+            {t(
+              'An open source social network for developers. Share, showcase, connect — growing with the community.',
+            )}
           </p>
         </div>
 
@@ -25,15 +27,15 @@ export default function Footer() {
             <GithubIcon />
             GitHub
           </a>
-          <a href="/login">Giriş Yap</a>
-          <a href="/register">Hesap Oluştur</a>
+          <a href="/login">{t('Sign In')}</a>
+          <a href="/register">{t('Create Account')}</a>
         </nav>
       </div>
 
       <div className="footer-bottom">
         <div className="container footer-bottom-inner">
           <span>© 2026 SourceMesh</span>
-          <span className="right">açık kaynak · geliştiriciler için</span>
+          <span className="right">{t('open source · for developers')}</span>
         </div>
       </div>
     </footer>

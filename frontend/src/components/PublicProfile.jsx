@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import Comments from './Comments.jsx';
 import FlowPost from './FlowPost.jsx';
 import ProfileHeader from './ProfileHeader.jsx';
+import SettingsMenu from './SettingsMenu.jsx';
 import { isAuthenticated } from '../lib/auth.js';
+import { t } from '../lib/i18n.js';
 import logo from '../assets/logo.svg';
 import '../App.css';
 
@@ -48,7 +50,7 @@ export default function PublicProfile({ username }) {
 
         if (!response.ok || !data.username) {
           if (!cancelled) {
-            setError('Profil yüklenemedi. Lütfen tekrar dene.');
+            setError(t('Profile could not be loaded. Please try again.'));
           }
           return;
         }
@@ -58,7 +60,9 @@ export default function PublicProfile({ username }) {
         }
       } catch {
         if (!cancelled) {
-          setError('Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.');
+          setError(
+            t('The server could not be reached. Check your connection and try again.'),
+          );
         }
       } finally {
         if (!cancelled) {
@@ -83,11 +87,12 @@ export default function PublicProfile({ username }) {
             SourceMesh
           </a>
           <div className="nav-actions" style={{ marginLeft: 'auto' }}>
+            <SettingsMenu />
             <a href="/login" className="btn btn-secondary nav-cta">
-              Giriş Yap
+              {t('Sign In')}
             </a>
             <a href="/register" className="btn btn-primary nav-cta">
-              Hesap Oluştur
+              {t('Create Account')}
             </a>
           </div>
         </div>
@@ -96,14 +101,14 @@ export default function PublicProfile({ username }) {
       <main className="profile-main">
         {loading ? (
           <div className="container">
-            <p className="profile-status">Profil yükleniyor…</p>
+            <p className="profile-status">{t('Loading profile…')}</p>
           </div>
         ) : notFound ? (
           <div className="container">
             <div className="profile-status">
-              <p role="alert">@{username} bulunamadı.</p>
+              <p role="alert">{t('@{username} could not be found.', { username })}</p>
               <a href="/" className="btn btn-secondary">
-                Ana sayfaya dön
+                {t('Back to home page')}
               </a>
             </div>
           </div>
@@ -116,7 +121,7 @@ export default function PublicProfile({ username }) {
                 className="btn btn-secondary"
                 onClick={() => setAttempt((value) => value + 1)}
               >
-                Tekrar dene
+                {t('Retry')}
               </button>
             </div>
           </div>
@@ -133,13 +138,13 @@ export default function PublicProfile({ username }) {
               <section className="profile-feed" aria-labelledby="public-feed-title">
                 <div className="profile-tabs">
                   <h2 id="public-feed-title" className="profile-tab active">
-                    Gönderiler
+                    {t('Posts')}
                   </h2>
                 </div>
 
                 {user.mesflows.length === 0 ? (
                   <p className="profile-empty">
-                    Bu kullanıcı henüz meshflow paylaşmamış.
+                    {t("This user hasn't shared a meshflow yet.")}
                   </p>
                 ) : (
                   <div className="post-list">

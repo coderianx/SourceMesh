@@ -6,37 +6,44 @@ import {
   UserRound,
   Waypoints,
 } from 'lucide-react';
+import { t } from '../lib/i18n.js';
 
 const FEATURES = [
   {
     icon: Newspaper,
-    title: 'Meshflow akışı',
-    text: 'Kısa paylaşımlar oluştur; akışta ve profilinde listelensin, istediğinde sil.',
+    title: t('Meshflow feed'),
+    text: t(
+      'Create short posts; they show up in the feed and on your profile, and you can delete them.',
+    ),
   },
   {
     icon: UserRound,
-    title: 'Profil sayfası',
-    text: 'Giriş yaptığında hesap bilgilerin ve meshflow’ların tek sayfada toplanır.',
+    title: t('Profile page'),
+    text: t(
+      'When you sign in, your account info and meshflows are collected on a single page.',
+    ),
   },
   {
     icon: KeyRound,
-    title: 'JWT oturumları',
-    text: 'Kısa ömürlü erişim token’ı ve veritabanında saklanan yenileme token’ı.',
+    title: t('JWT sessions'),
+    text: t('Short-lived access tokens and a refresh token stored in the database.'),
   },
   {
     icon: ShieldCheck,
-    title: 'Güvenlik temelleri',
-    text: 'Parolalar bcrypt ile hash’lenir; uçlarda IP başına hız sınırı uygulanır.',
+    title: t('Security basics'),
+    text: t(
+      'Passwords are hashed with bcrypt; a per-IP rate limit is applied at the endpoints.',
+    ),
   },
   {
     icon: SquareTerminal,
-    title: 'REST API',
-    text: 'Uygulamanın tamamı, JSON konuşan sade bir HTTP API’siyle çalışır.',
+    title: t('REST API'),
+    text: t('The whole app works with a simple JSON-speaking HTTP API.'),
   },
   {
     icon: Waypoints,
-    title: 'Az bağımlılık',
-    text: 'Go, PostgreSQL, Redis ve React. Bağımlılık listesi kısa tutuldu.',
+    title: t('Few dependencies'),
+    text: t('Go, PostgreSQL, Redis and React. The dependency list is kept short.'),
   },
 ];
 
@@ -45,10 +52,12 @@ export default function Features() {
     <section className="section" id="ozellikler" aria-labelledby="ozellikler-title">
       <div className="container">
         <div className="section-head">
-          <span className="eyebrow">özellikler</span>
-          <h2 id="ozellikler-title">Sade ama işleyen bir çekirdek</h2>
+          <span className="eyebrow">{t('features')}</span>
+          <h2 id="ozellikler-title">{t('A simple but working core')}</h2>
           <p>
-            Şu an hesap, paylaşım ve profil var. Gerisi zamanla eklenecek.
+            {t(
+              "Right now there's account, posting and profile. The rest will be added over time.",
+            )}
           </p>
         </div>
 

@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import AuthLayout from './AuthLayout.jsx';
 import { saveTokens } from '../lib/auth.js';
+import { t } from '../lib/i18n.js';
 
 const USERNAME_MAX = 20;
 const PASSWORD_MIN = 6;
 
-const STATUS_MESSAGES = {
-  400: 'Girdiğin bilgiler geçersiz.',
-  401: 'Kullanıcı adı veya şifre hatalı.',
-  429: 'Çok fazla deneme yaptın. Biraz sonra tekrar dene.',
-  500: 'Sunucuda bir hata oluştu. Tekrar dene.',
+const STATUS_KEYS = {
+  400: 'Invalid info submitted.',
+  401: 'Username or password is incorrect.',
+  429: "You've tried too many times. Try again a bit later.",
+  500: 'A server error occurred. Try again.',
 };
 
 export default function Login() {
@@ -19,7 +20,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    document.title = 'Giriş — SourceMesh';
+    document.title = t('Sign in — SourceMesh');
   }, []);
 
   async function handleSubmit(event) {
@@ -29,17 +30,17 @@ export default function Login() {
     const name = username.trim();
 
     if (!name) {
-      setError('Kullanıcı adı gerekli.');
+      setError(t('Username is required.'));
       return;
     }
 
     if (name.length > USERNAME_MAX) {
-      setError(`Kullanıcı adı en fazla ${USERNAME_MAX} karakter olabilir.`);
+      setError(t('Username can be at most {max} characters.', { max: USERNAME_MAX }));
       return;
     }
 
     if (password.length < PASSWORD_MIN) {
-      setError(`Şifre en az ${PASSWORD_MIN} karakter olmalı.`);
+      setError(t('Password must be at least {min} characters.', { min: PASSWORD_MIN }));
       return;
     }
 
@@ -62,9 +63,9 @@ export default function Login() {
 
       if (!response.ok) {
         setError(
-          STATUS_MESSAGES[response.status] ||
+          (STATUS_KEYS[response.status] && t(STATUS_KEYS[response.status])) ||
             data.error ||
-            'Giriş yapılamadı. Lütfen tekrar dene.',
+            t('Sign-in failed. Please try again.'),
         );
         return;
       }
@@ -72,13 +73,13 @@ export default function Login() {
       try {
         saveTokens(data.accessToken, data.refreshToken);
       } catch {
-        setError('Oturum bilgileri kaydedilemedi. Tarayıcı depolamasını kontrol et.');
+        setError(t('Session info could not be saved. Check your browser storage.'));
         return;
       }
 
       window.location.replace('/profile');
     } catch {
-      setError('Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.');
+      setError(t('The server could not be reached. Check your connection and try again.'));
     } finally {
       setLoading(false);
     }
@@ -86,15 +87,15 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <span className="eyebrow">giriş</span>
-      <h1>Tekrar hoş geldin</h1>
+      <span className="eyebrow">{t('sign in')}</span>
+      <h1>{t('Welcome back')}</h1>
       <p className="auth-sub">
-        Kullanıcı adın ve şifrenle oturum aç, kaldığın yerden devam et.
+        {t('Sign in with your username and password and pick up where you left off.')}
       </p>
 
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         <label className="field">
-          <span>Kullanıcı adı</span>
+          <span>{t('Username')}</span>
           <input
             type="text"
             name="username"
@@ -103,12 +104,12 @@ export default function Login() {
             required
             value={username}
             onChange={(event) => setUsername(event.target.value)}
-            placeholder="kullanici_adi"
+            placeholder="username"
           />
         </label>
 
         <label className="field">
-          <span>Şifre</span>
+          <span>{t('Password')}</span>
           <input
             type="password"
             name="password"
@@ -133,13 +134,13 @@ export default function Login() {
           disabled={loading}
           aria-busy={loading}
         >
-          {loading ? 'Giriş yapılıyor…' : 'Giriş Yap'}
+          {loading ? t('Signing in…') : t('Sign In')}
         </button>
 
-        <p className="auth-note">ücretsiz · açık kaynak · REST API</p>
+        <p className="auth-note">{t('free · open source · REST API')}</p>
 
         <p className="auth-alt">
-          Hesabın yok mu? <a href="/register">Hesap oluştur</a>
+          {t("Don't have an account?")} <a href="/register">{t('Create one')}</a>
         </p>
       </form>
     </AuthLayout>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { clearTokens, getAccessToken } from '../lib/auth.js';
 import { formatDate } from '../lib/format.js';
+import { t } from '../lib/i18n.js';
 
 export default function Comments({ meshflowId }) {
   const [comments, setComments] = useState([]);
@@ -43,7 +44,7 @@ export default function Comments({ meshflowId }) {
 
         if (!response.ok) {
           if (!cancelled) {
-            setError('Yorumlar yüklenemedi. Lütfen tekrar dene.');
+            setError(t("Couldn't load comments. Please try again."));
           }
           return;
         }
@@ -53,7 +54,7 @@ export default function Comments({ meshflowId }) {
         }
       } catch {
         if (!cancelled) {
-          setError('Sunucuya ulaşılamadı. Bağlantını kontrol et.');
+          setError(t('The server could not be reached. Check your connection.'));
         }
       } finally {
         if (!cancelled) {
@@ -109,7 +110,7 @@ export default function Comments({ meshflowId }) {
       }
 
       if (!response.ok) {
-        setError('Yorum gönderilemedi. Lütfen tekrar dene.');
+        setError(t("Couldn't send the comment. Please try again."));
         return;
       }
 
@@ -124,7 +125,7 @@ export default function Comments({ meshflowId }) {
       ]);
       setContent('');
     } catch {
-      setError('Sunucuya ulaşılamadı. Bağlantını kontrol et.');
+      setError(t('The server could not be reached. Check your connection.'));
     } finally {
       setPosting(false);
     }
@@ -134,14 +135,15 @@ export default function Comments({ meshflowId }) {
     <div className="flow-comments">
       {authExpired ? (
         <p className="comment-status">
-          Oturumun sona erdi. <a href="/login">Tekrar giriş yap</a>.
+          {t('Your session has expired.')}{' '}
+          <a href="/login">{t('Sign in again')}</a>.
         </p>
       ) : (
         <>
           {loading ? (
-            <p className="comment-status">Yorumlar yükleniyor…</p>
+            <p className="comment-status">{t('Loading comments…')}</p>
           ) : comments.length === 0 ? (
-            <p className="comment-empty">Henüz yorum yok. İlk yorumu sen yaz.</p>
+            <p className="comment-empty">{t('No comments yet. Be the first to write one.')}</p>
           ) : (
             <ul className="comment-list">
               {comments.map((comment) => (
@@ -170,8 +172,8 @@ export default function Comments({ meshflowId }) {
               className="comment-input"
               value={content}
               maxLength={1000}
-              placeholder="Yorum yaz…"
-              aria-label="Yorum"
+              placeholder={t('Write a comment…')}
+              aria-label={t('Comment')}
               onChange={(event) => setContent(event.target.value)}
             />
             <button
@@ -179,7 +181,7 @@ export default function Comments({ meshflowId }) {
               className="btn btn-primary btn-sm"
               disabled={posting || !content.trim()}
             >
-              {posting ? 'Gönderiliyor…' : 'Gönder'}
+              {posting ? t('Sending…') : t('Send')}
             </button>
           </form>
         </>

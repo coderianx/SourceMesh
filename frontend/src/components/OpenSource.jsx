@@ -1,17 +1,18 @@
 import { Check, Star } from 'lucide-react';
+import { t } from '../lib/i18n.js';
 
 const POINTS = [
   {
-    title: 'Kaynak kod GitHub’da',
-    text: 'Çekirdeğin tamamı açık; incele, çatalla, eksik gördüğünü bildir.',
+    title: t('Source code on GitHub'),
+    text: t('The whole core is open; inspect it, fork it, report what you find missing.'),
   },
   {
-    title: 'Küçük ve okunabilir',
-    text: 'Az bağımlılık, tek sürüm ve anlaşılır bir paket yapısı.',
+    title: t('Small and readable'),
+    text: t('Few dependencies, a single version and an understandable package structure.'),
   },
   {
-    title: 'Katkıya açık',
-    text: 'Hata bildirimleri ve pull request’ler memnuniyetle karşılanır.',
+    title: t('Open to contributions'),
+    text: t('Bug reports and pull requests are welcome.'),
   },
 ];
 
@@ -20,11 +21,12 @@ export default function OpenSource() {
     <section className="section" id="acik-kaynak" aria-labelledby="acik-kaynak-title">
       <div className="container oss">
         <div>
-          <span className="eyebrow">açık kaynak</span>
-          <h2 id="acik-kaynak-title">Kaynak kodu açık.</h2>
+          <span className="eyebrow">{t('open source')}</span>
+          <h2 id="acik-kaynak-title">{t('The source code is open.')}</h2>
           <p>
-            SourceMesh toplulukla büyüyor. Kodu inceleyebilir, kendi makinende
-            çalıştırabilir ve geliştirebilirsin.
+            {t(
+              'SourceMesh grows with the community. You can inspect the code, run it on your own machine and improve it.',
+            )}
           </p>
 
           <ul className="oss-list">
@@ -47,7 +49,7 @@ export default function OpenSource() {
               className="btn btn-primary"
             >
               <Star aria-hidden="true" />
-              Repoyu İncele
+              {t('Check out the Repo')}
             </a>
           </div>
         </div>

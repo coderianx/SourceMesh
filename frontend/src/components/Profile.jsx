@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { LogOut, UserRound } from 'lucide-react';
 import Comments from './Comments.jsx';
 import FlowPost from './FlowPost.jsx';
+import SettingsMenu from './SettingsMenu.jsx';
 import ProfileHeader from './ProfileHeader.jsx';
 import { clearTokens, getAccessToken } from '../lib/auth.js';
+import { t } from '../lib/i18n.js';
 import logo from '../assets/logo.svg';
 import '../App.css';
 
@@ -17,7 +20,7 @@ export default function Profile() {
   const [postError, setPostError] = useState('');
 
   useEffect(() => {
-    document.title = 'Profil — SourceMesh';
+    document.title = t('Profile — SourceMesh');
   }, []);
 
   useEffect(() => {
@@ -55,7 +58,7 @@ export default function Profile() {
 
         if (!response.ok || !data.username) {
           if (!cancelled) {
-            setError('Profil yüklenemedi. Lütfen tekrar dene.');
+            setError(t('Profile could not be loaded. Please try again.'));
           }
           return;
         }
@@ -65,7 +68,9 @@ export default function Profile() {
         }
       } catch {
         if (!cancelled) {
-          setError('Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.');
+          setError(
+            t('The server could not be reached. Check your connection and try again.'),
+          );
         }
       } finally {
         if (!cancelled) {
@@ -92,12 +97,12 @@ export default function Profile() {
     const value = content.trim();
 
     if (!value) {
-      setPostError('İçerik gerekli.');
+      setPostError(t('Content is required.'));
       return;
     }
 
     if ([...value].length > 1000) {
-      setPostError('İçerik en fazla 1000 karakter olabilir.');
+      setPostError(t('Content can be at most {max} characters.', { max: 1000 }));
       return;
     }
 
@@ -129,7 +134,7 @@ export default function Profile() {
       }
 
       if (!response.ok) {
-        setPostError('Meshflow oluşturulamadı. Lütfen tekrar dene.');
+        setPostError(t('The meshflow could not be created. Please try again.'));
         return;
       }
 
@@ -147,7 +152,9 @@ export default function Profile() {
       setContent('');
       setComposerOpen(false);
     } catch {
-      setPostError('Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.');
+      setPostError(
+        t('The server could not be reached. Check your connection and try again.'),
+      );
     } finally {
       setPosting(false);
     }
@@ -163,13 +170,27 @@ export default function Profile() {
           </a>
           <div className="nav-actions" style={{ marginLeft: 'auto' }}>
             {user && <span className="profile-chip">@{user.username}</span>}
-            <button
-              type="button"
-              className="btn btn-secondary nav-cta"
-              onClick={handleLogout}
-            >
-              Çıkış Yap
-            </button>
+            {user && (
+              <SettingsMenu>
+                <a
+                  className="settings-item"
+                  role="menuitem"
+                  href={`/@${encodeURIComponent(user.username)}`}
+                >
+                  <UserRound aria-hidden="true" />
+                  {t('Public profile')}
+                </a>
+                <button
+                  className="settings-item"
+                  type="button"
+                  role="menuitem"
+                  onClick={handleLogout}
+                >
+                  <LogOut aria-hidden="true" />
+                  {t('Sign Out')}
+                </button>
+              </SettingsMenu>
+            )}
           </div>
         </div>
       </header>
@@ -177,7 +198,7 @@ export default function Profile() {
       <main className="profile-main">
         {loading ? (
           <div className="container">
-            <p className="profile-status">Profil yükleniyor…</p>
+            <p className="profile-status">{t('Loading profile…')}</p>
           </div>
         ) : error ? (
           <div className="container">
@@ -188,7 +209,7 @@ export default function Profile() {
                 className="btn btn-secondary"
                 onClick={() => setAttempt((value) => value + 1)}
               >
-                Tekrar dene
+                {t('Retry')}
               </button>
             </div>
           </div>
@@ -210,18 +231,12 @@ export default function Profile() {
                     + Create MeshFlow
                   </button>
                 )}
-                <a
-                  href={`/@${encodeURIComponent(user.username)}`}
-                  className="btn btn-secondary btn-sm"
-                >
-                  Genel profil
-                </a>
               </ProfileHeader>
 
               <section className="profile-feed" aria-labelledby="profile-feed-title">
                 <div className="profile-tabs">
                   <h2 id="profile-feed-title" className="profile-tab active">
-                    Gönderiler
+                    {t('Posts')}
                   </h2>
                 </div>
 
@@ -230,10 +245,10 @@ export default function Profile() {
                     <textarea
                       id="meshflow-content"
                       className="composer-input"
-                      aria-label="Yeni meshflow"
+                      aria-label={t('New meshflow')}
                       rows={3}
                       maxLength={1000}
-                      placeholder="Ne üretiyorsun?"
+                      placeholder={t('What are you building?')}
                       value={content}
                       onChange={(event) => setContent(event.target.value)}
                       autoFocus
@@ -250,14 +265,14 @@ export default function Profile() {
                             setPostError('');
                           }}
                         >
-                          Vazgeç
+                          {t('Discard')}
                         </button>
                         <button
                           type="submit"
                           className="btn btn-primary btn-sm"
                           disabled={posting || !content.trim()}
                         >
-                          {posting ? 'Paylaşılıyor…' : 'Paylaş'}
+                          {posting ? t('Sharing…') : t('Share')}
                         </button>
                       </div>
                     </div>
@@ -271,8 +286,9 @@ export default function Profile() {
 
                 {user.mesflows.length === 0 ? (
                   <p className="profile-empty">
-                    Henüz meshflow paylaşmadın. İlk gönderini oluşturduğunda
-                    burada görünecek.
+                    {t(
+                      "You haven't shared a meshflow yet. It will appear here once you create your first post.",
+                    )}
                   </p>
                 ) : (
                   <div className="post-list">

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { clearTokens, getAccessToken } from '../lib/auth.js';
+import { t } from '../lib/i18n.js';
 
 export default function LikeButton({ meshflowId, likes, liked }) {
   const [isLiked, setIsLiked] = useState(Boolean(liked));
@@ -60,7 +61,7 @@ export default function LikeButton({ meshflowId, likes, liked }) {
       onClick={toggle}
       disabled={pending}
       aria-pressed={isLiked}
-      aria-label={isLiked ? 'Beğeniyi geri al' : 'Beğen'}
+      aria-label={isLiked ? t('Unlike') : t('Like')}
     >
       <Heart aria-hidden="true" fill={isLiked ? 'currentColor' : 'none'} />
       <span>{count}</span>
