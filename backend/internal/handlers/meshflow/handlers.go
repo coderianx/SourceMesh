@@ -395,3 +395,225 @@ func ListComments(
 		"comments":    comments,
 	})
 }
+
+func LikeMeshflow(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	ctx := goflow.Context(w, r)
+
+	claims, ok := middlewares.GetClaims(r)
+
+	if !ok {
+		ctx.SendJSON(http.StatusUnauthorized, goflow.H{
+			"error": "unauthorized",
+		})
+		return
+	}
+
+	meshflowID, err := strconv.ParseInt(
+		chi.URLParam(r, "id"),
+		10,
+		64,
+	)
+
+	if err != nil || meshflowID <= 0 {
+		ctx.SendJSON(http.StatusBadRequest, goflow.H{
+			"error": "invalid meshflow id",
+		})
+		return
+	}
+
+	var exists bool
+
+	err = store.DB.QueryRow(
+		r.Context(),
+		`
+		SELECT EXISTS (
+			SELECT 1
+			FROM meshflows
+			WHERE id = $1
+		);
+		`,
+		meshflowID,
+	).Scan(
+		&exists,
+	)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	if !exists {
+		ctx.SendJSON(http.StatusNotFound, goflow.H{
+			"error": "meshflow not found",
+		})
+		return
+	}
+
+	result, err := store.DB.Exec(
+		r.Context(),
+		`
+		INSERT INTO likes (meshflow_id, user_id)
+		VALUES ($1, $2)
+		ON CONFLICT (meshflow_id, user_id) DO NOTHING;
+		`,
+		meshflowID,
+		claims.UserID,
+	)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	var likes int64
+
+	err = store.DB.QueryRow(
+		r.Context(),
+		`
+		SELECT COUNT(*)
+		FROM likes
+		WHERE meshflow_id = $1;
+		`,
+		meshflowID,
+	).Scan(
+		&likes,
+	)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	if result.RowsAffected() == 0 {
+		ctx.SendJSON(http.StatusOK, goflow.H{
+			"message": "already liked",
+			"likes":   likes,
+			"liked":   true,
+		})
+		return
+	}
+
+	ctx.SendJSON(http.StatusCreated, goflow.H{
+		"message": "liked",
+		"likes":   likes,
+		"liked":   true,
+	})
+}
+
+func UnlikeMeshflow(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	ctx := goflow.Context(w, r)
+
+	claims, ok := middlewares.GetClaims(r)
+
+	if !ok {
+		ctx.SendJSON(http.StatusUnauthorized, goflow.H{
+			"error": "unauthorized",
+		})
+		return
+	}
+
+	meshflowID, err := strconv.ParseInt(
+		chi.URLParam(r, "id"),
+		10,
+		64,
+	)
+
+	if err != nil || meshflowID <= 0 {
+		ctx.SendJSON(http.StatusBadRequest, goflow.H{
+			"error": "invalid meshflow id",
+		})
+		return
+	}
+
+	var exists bool
+
+	err = store.DB.QueryRow(
+		r.Context(),
+		`
+		SELECT EXISTS (
+			SELECT 1
+			FROM meshflows
+			WHERE id = $1
+		);
+		`,
+		meshflowID,
+	).Scan(
+		&exists,
+	)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	if !exists {
+		ctx.SendJSON(http.StatusNotFound, goflow.H{
+			"error": "meshflow not found",
+		})
+		return
+	}
+
+	result, err := store.DB.Exec(
+		r.Context(),
+		`
+		DELETE FROM likes
+		WHERE meshflow_id = $1 AND user_id = $2;
+		`,
+		meshflowID,
+		claims.UserID,
+	)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	var likes int64
+
+	err = store.DB.QueryRow(
+		r.Context(),
+		`
+		SELECT COUNT(*)
+		FROM likes
+		WHERE meshflow_id = $1;
+		`,
+		meshflowID,
+	).Scan(
+		&likes,
+	)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	message := "unliked"
+
+	if result.RowsAffected() == 0 {
+		message = "not liked"
+	}
+
+	ctx.SendJSON(http.StatusOK, goflow.H{
+		"message": message,
+		"likes":   likes,
+		"liked":   false,
+	})
+}

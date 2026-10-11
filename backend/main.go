@@ -105,6 +105,25 @@ func main() {
 		)
 
 		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Post(
+			"/meshflow/{id}/like", meshflow.LikeMeshflow,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Delete(
+			"/meshflow/{id}/like", meshflow.UnlikeMeshflow,
+		)
+
+		r.With(
+			middlewares.OptionalAuth,
 			middlewares.RateLimitByIP(
 				30, time.Minute,
 			),

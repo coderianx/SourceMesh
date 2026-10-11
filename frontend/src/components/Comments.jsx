@@ -1,22 +1,16 @@
 import { useEffect, useState } from 'react';
-import { MessageSquare } from 'lucide-react';
 import { clearTokens, getAccessToken } from '../lib/auth.js';
 import { formatDate } from '../lib/format.js';
 
 export default function Comments({ meshflowId }) {
-  const [open, setOpen] = useState(false);
   const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [authExpired, setAuthExpired] = useState(false);
   const [content, setContent] = useState('');
   const [posting, setPosting] = useState(false);
 
   useEffect(() => {
-    if (!open || authExpired) {
-      return undefined;
-    }
-
     let cancelled = false;
 
     async function load() {
@@ -73,7 +67,7 @@ export default function Comments({ meshflowId }) {
     return () => {
       cancelled = true;
     };
-  }, [open, meshflowId, authExpired]);
+  }, [meshflowId]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -134,21 +128,6 @@ export default function Comments({ meshflowId }) {
     } finally {
       setPosting(false);
     }
-  }
-
-  if (!open) {
-    return (
-      <div className="flow-comments">
-        <button
-          type="button"
-          className="comment-toggle"
-          onClick={() => setOpen(true)}
-        >
-          <MessageSquare aria-hidden="true" />
-          Yorumlar
-        </button>
-      </div>
-    );
   }
 
   return (

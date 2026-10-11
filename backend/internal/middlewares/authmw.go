@@ -65,6 +65,46 @@ func Auth(next http.Handler) http.Handler {
 	})
 }
 
+// OptionalAuth stores models.Claims when a valid JWT is present.
+// Missing or invalid tokens are ignored; the request continues unauthenticated.
+func OptionalAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		secret := os.Getenv("JWT_SECRET")
+
+		if secret == "" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		header := r.Header.Get("Authorization")
+
+		parts := strings.SplitN(header, " ", 2)
+		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") || parts[1] == "" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		claims := &models.Claims{}
+		token, err := jwt.ParseWithClaims(parts[1], claims, func(t *jwt.Token) (any, error) {
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.ErrSignatureInvalid
+			}
+			return []byte(secret), nil
+		})
+
+		if err != nil || !token.Valid {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), claimsKey, claims)
+		ctx = context.WithValue(ctx, userIDKey, claims.UserID)
+		ctx = context.WithValue(ctx, usernameKey, claims.Username)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 // GetClaims returns models.Claims stored by Auth middleware.
 func GetClaims(r *http.Request) (*models.Claims, bool) {
 	claims, ok := r.Context().Value(claimsKey).(*models.Claims)

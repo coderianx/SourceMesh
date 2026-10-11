@@ -1022,10 +1022,54 @@ footer {
   overflow-wrap: anywhere;
 }
 
-.flow-comments {
-  margin-top: 12px;
-  padding-top: 12px;
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid var(--border-soft);
+}
+
+.post-actions + .flow-comments {
+  margin-top: 4px;
+  padding-top: 12px;
+}
+
+.like-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--faint);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.like-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.like-button:hover {
+  color: #f472b6;
+}
+
+.like-button.liked {
+  color: #f472b6;
+}
+
+.like-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.flow-comments {
+  padding-top: 12px;
 }
 
 .comment-toggle {
