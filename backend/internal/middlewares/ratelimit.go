@@ -8,9 +8,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
-// RateLimitByIP limits requests per client IP using Redis.
+// RateLimitByIP limits requests per client IP and per endpoint using Redis.
 // Usage: r.With(middlewares.RateLimitByIP(100, time.Minute)).Post("/login", handler)
 func RateLimitByIP(limit int, window time.Duration) func(http.Handler) http.Handler {
 	if limit <= 0 {
@@ -24,7 +26,7 @@ func RateLimitByIP(limit int, window time.Duration) func(http.Handler) http.Hand
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip := clientIP(r)
-			key := "ratelimit:" + ip
+			key := rateLimitKey(r, ip)
 
 			ctx := r.Context()
 
@@ -69,6 +71,18 @@ func RateLimitByIP(limit int, window time.Duration) func(http.Handler) http.Hand
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func rateLimitKey(r *http.Request, ip string) string {
+	endpoint := r.URL.Path
+
+	if routeCtx := chi.RouteContext(r.Context()); routeCtx != nil {
+		if pattern := routeCtx.RoutePattern(); pattern != "" {
+			endpoint = pattern
+		}
+	}
+
+	return "ratelimit:" + r.Method + ":" + endpoint + ":" + ip
 }
 
 func clientIP(r *http.Request) string {

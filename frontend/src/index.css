@@ -210,6 +210,11 @@ section {
   font-size: 15px;
 }
 
+.btn-sm {
+  padding: 9px 14px;
+  font-size: 13px;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }

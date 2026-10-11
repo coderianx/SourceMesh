@@ -3,6 +3,7 @@ package main
 import (
 	"SourceMeshBackend/internal/handlers/auth"
 	"SourceMeshBackend/internal/handlers/meshflow"
+	"SourceMeshBackend/internal/handlers/public"
 	"SourceMeshBackend/internal/middlewares"
 	"SourceMeshBackend/internal/store"
 	"fmt"
@@ -83,6 +84,32 @@ func main() {
 			),
 		).Delete(
 			"/meshflow/{id}", meshflow.DeleteMeshflow,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Post(
+			"/meshflow/{id}/comments", meshflow.CreateComment,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				30, time.Minute,
+			),
+		).Get(
+			"/meshflow/{id}/comments", meshflow.ListComments,
+		)
+
+		r.With(
+			middlewares.RateLimitByIP(
+				30, time.Minute,
+			),
+		).Get(
+			"/profile/{username}", public.GetProfileByUsername,
 		)
 
 	})
