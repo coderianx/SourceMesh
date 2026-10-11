@@ -4,9 +4,7 @@ import Hero from './components/Hero.jsx';
 import FinalCta from './components/Closing.jsx';
 import Features from './components/Features.jsx';
 import HowItWorks from './components/HowItWorks.jsx';
-import Showcase from './components/Showcase.jsx';
 import OpenSource from './components/OpenSource.jsx';
-import Voices from './components/Voices.jsx';
 import Footer from './components/Footer.jsx';
 
 function App() {
@@ -20,9 +18,7 @@ function App() {
         <Hero />
         <Features />
         <HowItWorks />
-        <Showcase />
         <OpenSource />
-        <Voices />
         <FinalCta />
       </main>
       <Footer />

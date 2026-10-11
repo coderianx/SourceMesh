@@ -2,12 +2,16 @@ package main
 
 import (
 	"SourceMeshBackend/internal/handlers/auth"
+	"SourceMeshBackend/internal/handlers/meshflow"
+	"SourceMeshBackend/internal/middlewares"
 	"SourceMeshBackend/internal/store"
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 )
 
@@ -30,12 +34,57 @@ func main() {
 	// Router
 	router := chi.NewRouter()
 
+	router.Use(middleware.Logger)
+
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Route("/auth", func(r chi.Router) {
-			r.Post("/register", auth.Register)
-			r.Post("/login", auth.Login)
-			r.Post("/refresh", auth.Refresh)
+			r.With(
+				middlewares.RateLimitByIP(5, time.Minute),
+			).Post(
+				"/register", auth.Register,
+			)
+
+			r.With(
+				middlewares.RateLimitByIP(5, time.Minute),
+			).Post(
+				"/login", auth.Login,
+			)
+
+			r.With(
+				middlewares.RateLimitByIP(5, time.Minute),
+			).Post(
+				"/refresh", auth.Refresh,
+			)
+
+			r.With(
+				middlewares.Auth,
+				middlewares.RateLimitByIP(
+					30, time.Minute,
+				),
+			).Get(
+				"/me", auth.GetMe,
+			)
 		})
+
+		r.With(
+			middlewares.RateLimitByIP(
+				15,
+				time.Minute,
+			),
+			middlewares.Auth,
+		).Post(
+			"/meshflow", meshflow.CreateMeshFlow,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Delete(
+			"/meshflow/{id}", meshflow.DeleteMeshflow,
+		)
+
 	})
 
 	// Start server

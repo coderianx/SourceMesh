@@ -2,20 +2,16 @@ import { Check, Star } from 'lucide-react';
 
 const POINTS = [
   {
-    title: 'MIT lisansı',
-    text: 'Kilitlenme yok, sürpriz lisans değişikliği yok.',
+    title: 'Kaynak kod GitHub’da',
+    text: 'Çekirdeğin tamamı açık; incele, çatalla, eksik gördüğünü bildir.',
   },
   {
-    title: 'Self-host',
-    text: 'Docker ile tek komutta kur. Verilerin sende kalır.',
+    title: 'Küçük ve okunabilir',
+    text: 'Az bağımlılık, tek sürüm ve anlaşılır bir paket yapısı.',
   },
   {
-    title: 'Herkes katkıda bulunabilir',
-    text: '“İyi ilk issue” etiketiyle başla, 48 saat içinde inceleme.',
-  },
-  {
-    title: 'Şeffaf yol haritası',
-    text: 'Öncelikler topluluk oyuyla belirlenir.',
+    title: 'Katkıya açık',
+    text: 'Hata bildirimleri ve pull request’ler memnuniyetle karşılanır.',
   },
 ];
 
@@ -25,19 +21,19 @@ export default function OpenSource() {
       <div className="container oss">
         <div>
           <span className="eyebrow">açık kaynak</span>
-          <h2 id="acik-kaynak-title">Kod hepimizin.</h2>
+          <h2 id="acik-kaynak-title">Kaynak kodu açık.</h2>
           <p>
-            SourceMesh bir şirket ürünü değil, topluluk mülkü. İncele, çatalla,
-            çalıştır — daha iyisini birlikte inşa edelim.
+            SourceMesh toplulukla büyüyor. Kodu inceleyebilir, kendi makinende
+            çalıştırabilir ve geliştirebilirsin.
           </p>
 
           <ul className="oss-list">
-            {POINTS.map((p) => (
-              <li key={p.title}>
+            {POINTS.map((point) => (
+              <li key={point.title}>
                 <Check aria-hidden="true" />
                 <span>
-                  <b>{p.title}</b>
-                  <small>{p.text}</small>
+                  <b>{point.title}</b>
+                  <small>{point.text}</small>
                 </span>
               </li>
             ))}
@@ -45,39 +41,26 @@ export default function OpenSource() {
 
           <div className="oss-actions">
             <a
-              href="https://github.com"
+              href="https://github.com/coderianx/SourceMesh"
               target="_blank"
               rel="noreferrer"
               className="btn btn-primary"
             >
-              <Star aria-hidden="true" /> Repoyu Yıldızla
-            </a>
-            <a href="#acik-kaynak" className="btn btn-secondary">
-              Katkı Rehberi
+              <Star aria-hidden="true" />
+              Repoyu İncele
             </a>
           </div>
         </div>
 
         <div>
           <div className="install" style={{ marginTop: 0 }}>
-            <div className="install-head">sourcemesh / sourcemesh</div>
+            <div className="install-head">coderianx / SourceMesh</div>
             <div className="codeblock">
               <span className="prompt">$ </span>
-              <span className="cmd">gh repo clone sourcemesh/sourcemesh</span>{'\n\n'}
-              12.4k yıldız · 1.9k çatallama · 214 açık issue{'\n'}
-              v1.2.0 — 6 gün önce yayınlandı
+              <span className="cmd">gh repo clone coderianx/SourceMesh</span>
             </div>
           </div>
-          <p
-            style={{
-              marginTop: 14,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12.5,
-              color: 'var(--faint)',
-            }}
-          >
-            Go · React · PostgreSQL · Docker
-          </p>
+          <p className="oss-stack">Go · chi · PostgreSQL · Redis · React · Vite</p>
         </div>
       </div>
     </section>

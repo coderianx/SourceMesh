@@ -1,19 +1,25 @@
 const STEPS = [
   {
     num: '01',
-    title: 'Profilini oluştur',
-    text: 'GitHub hesabınla giriş yap. Repoların ve katkıların otomatik içe aktarılsın.',
+    title: 'Hesap oluştur',
+    text: 'Kullanıcı adı ve şifre yeterli. E-posta doğrulaması istemez.',
   },
   {
     num: '02',
-    title: 'Katıl ve paylaş',
-    text: 'İlgini çeken topluluklara katıl, akışta paylaş, tartışmalara dahil ol.',
+    title: 'Oturum aç',
+    text: 'Girişten sonra profil sayfana yönlendirilirsin.',
   },
   {
     num: '03',
-    title: 'Birlikte üret',
-    text: 'Proje vitrinini doldur, eşleştiğin kişilerle ekip kur, katkıya başla.',
+    title: 'Meshflow paylaş',
+    text: 'İlk paylaşımını oluştur; profilinde listelenmeye başlasın.',
   },
+];
+
+const SETUP = [
+  'git clone https://github.com/coderianx/SourceMesh',
+  'cd SourceMesh/backend && go run .',
+  'cd SourceMesh/frontend && npm install && npm run dev',
 ];
 
 export default function HowItWorks() {
@@ -23,27 +29,33 @@ export default function HowItWorks() {
         <div className="section-head">
           <span className="eyebrow">nasıl çalışır</span>
           <h2 id="nasil-calisir-title">Üç adımda başla</h2>
-          <p>Kayıt formu yorgunluğu yok. Zaten GitHub’dasın — oradan devam et.</p>
+          <p>Kayıt formu yormaz, hesabın hemen hazır olur.</p>
         </div>
 
         <div className="steps">
-          {STEPS.map((s) => (
-            <article key={s.num} className="step">
-              <span className="step-num">{s.num}</span>
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
+          {STEPS.map((step) => (
+            <article key={step.num} className="step">
+              <span className="step-num">{step.num}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
             </article>
           ))}
         </div>
 
         <div className="install">
-          <div className="install-head">kendi sunucunda çalıştır</div>
+          <div className="install-head">yerel kurulum</div>
           <div className="codeblock">
-            <span className="prompt">$ </span>
-            <span className="cmd">git clone https://github.com/sourcemesh/sourcemesh</span>{'\n'}
-            <span className="prompt">$ </span>
-            <span className="cmd">cd sourcemesh && docker compose up -d</span>
+            {SETUP.map((cmd) => (
+              <span key={cmd} className="code-line">
+                <span className="prompt">$ </span>
+                <span className="cmd">{cmd}</span>
+              </span>
+            ))}
           </div>
+          <p className="install-note">
+            Backend için PostgreSQL ve Redis gerekir; bağlantı bilgileri .env
+            dosyasından okunur.
+          </p>
         </div>
       </div>
     </section>

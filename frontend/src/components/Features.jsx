@@ -1,42 +1,42 @@
 import {
-  FolderGit2,
-  MessagesSquare,
+  KeyRound,
   Newspaper,
-  Scale,
+  ShieldCheck,
+  SquareTerminal,
   UserRound,
-  UsersRound,
+  Waypoints,
 } from 'lucide-react';
 
 const FEATURES = [
   {
-    icon: MessagesSquare,
-    title: 'Topluluklar',
-    text: 'İlgi alanına göre topluluk kur, tartış, oyla. Forum disiplini, modern arayüz.',
-  },
-  {
     icon: Newspaper,
-    title: 'Akış',
-    text: 'Kısa güncellemeler, kod parçacıkları, tartışmalar. Kronolojik ve reklamsız.',
+    title: 'Meshflow akışı',
+    text: 'Kısa paylaşımlar oluştur; akışta ve profilinde listelensin, istediğinde sil.',
   },
   {
     icon: UserRound,
-    title: 'Profiller',
-    text: 'Katkıların ve projelerinle yaşayan bir profil. Özgeçmiş değil, kanıt.',
+    title: 'Profil sayfası',
+    text: 'Giriş yaptığında hesap bilgilerin ve meshflow’ların tek sayfada toplanır.',
   },
   {
-    icon: FolderGit2,
-    title: 'Projeler',
-    text: 'Repolarını bağla, sürümlerini duyur, katkıcı bul. Vitrinin hep güncel.',
+    icon: KeyRound,
+    title: 'JWT oturumları',
+    text: 'Kısa ömürlü erişim token’ı ve veritabanında saklanan yenileme token’ı.',
   },
   {
-    icon: UsersRound,
-    title: 'Eşleşme',
-    text: 'Yetenek ve ilgiye göre ekip arkadaşı, mentor ya da ilk issue’nu bul.',
+    icon: ShieldCheck,
+    title: 'Güvenlik temelleri',
+    text: 'Parolalar bcrypt ile hash’lenir; uçlarda IP başına hız sınırı uygulanır.',
   },
   {
-    icon: Scale,
-    title: 'Açık Kaynak',
-    text: 'MIT lisansı, self-host desteği. Yol haritası topluluk oyuyla şekillenir.',
+    icon: SquareTerminal,
+    title: 'REST API',
+    text: 'Uygulamanın tamamı, JSON konuşan sade bir HTTP API’siyle çalışır.',
+  },
+  {
+    icon: Waypoints,
+    title: 'Az bağımlılık',
+    text: 'Go, PostgreSQL, Redis ve React. Bağımlılık listesi kısa tutuldu.',
   },
 ];
 
@@ -46,21 +46,20 @@ export default function Features() {
       <div className="container">
         <div className="section-head">
           <span className="eyebrow">özellikler</span>
-          <h2 id="ozellikler-title">İhtiyacın olan her şey, tek çatı altında</h2>
+          <h2 id="ozellikler-title">Sade ama işleyen bir çekirdek</h2>
           <p>
-            Farklı platformlara dağılmana gerek yok. Tartışma, paylaşım ve
-            üretim aynı ağda.
+            Şu an hesap, paylaşım ve profil var. Gerisi zamanla eklenecek.
           </p>
         </div>
 
         <div className="feature-grid">
-          {FEATURES.map((f) => (
-            <article key={f.title} className="feature-card">
+          {FEATURES.map((feature) => (
+            <article key={feature.title} className="feature-card">
               <span className="feature-icon" aria-hidden="true">
-                <f.icon />
+                <feature.icon />
               </span>
-              <h3>{f.title}</h3>
-              <p>{f.text}</p>
+              <h3>{feature.title}</h3>
+              <p>{feature.text}</p>
             </article>
           ))}
         </div>

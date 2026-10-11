@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"SourceMeshBackend/internal/middlewares"
 	"SourceMeshBackend/internal/models"
 	"SourceMeshBackend/internal/store"
 	"crypto/sha256"
@@ -82,9 +83,9 @@ func Register(
 		r.Context(),
 		`
 		INSERT INTO users (
-			username, password
+			username, name, password
 		)
-		VALUES ($1,$2);
+		VALUES ($1,$1,$2);
 		`,
 		req.Username,
 		string(hashedPassword),
@@ -177,7 +178,7 @@ func Login(
 		req.Username,
 	).Scan(
 		&userID,
-		passwordDB,
+		&passwordDB,
 	)
 
 	if err != nil {
@@ -226,7 +227,7 @@ func Login(
 		claims,
 	)
 
-	accessToken, err := access.SignedString(secretKey)
+	accessToken, err := access.SignedString([]byte(secretKey))
 
 	if err != nil {
 		ctx.SendJSON(500, goflow.H{
@@ -248,7 +249,7 @@ func Login(
 			r.Context(),
 			`
 			INSERT INTO refresh_tokens (
-				user_id, token, expire_at
+				user_id, token, expires_at
 			)
 			VALUES ($1,$2,$3);
 			`,
@@ -437,7 +438,7 @@ func Refresh(
 		claims,
 	)
 
-	accessToken, err := access.SignedString(secret)
+	accessToken, err := access.SignedString([]byte(secret))
 
 	if err != nil {
 		ctx.SendJSON(500, goflow.H{
@@ -461,11 +462,12 @@ func Refresh(
 	_, err = tx.Exec(
 		r.Context(),
 		`
-		INSERT INTO refresh_tokens (user_id, token)
-		VALUES ($1,$2)
+		INSERT INTO refresh_tokens (user_id, token, expires_at)
+		VALUES ($1,$2,$3)
 		`,
 		userID,
 		hex.EncodeToString(refreshToken[:]),
+		time.Now().Add(30*24*time.Hour),
 	)
 
 	if err != nil {
@@ -488,5 +490,83 @@ func Refresh(
 	ctx.SendJSON(200, goflow.H{
 		"accessToken":  accessToken,
 		"refreshToken": randomToken,
+	})
+}
+
+func GetMe(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	ctx := goflow.Context(w, r)
+
+	claims, ok := middlewares.GetClaims(r)
+
+	if !ok {
+		ctx.SendJSON(http.StatusUnauthorized, goflow.H{
+			"error": "unauthorized",
+		})
+		return
+	}
+
+	rows, err := store.DB.Query(
+		r.Context(),
+		`
+		SELECT id, content, created_at
+		FROM meshflows
+		WHERE user_id = $1
+		ORDER BY created_at DESC;
+		`,
+		claims.UserID,
+	)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	defer rows.Close()
+
+	meshflows := []goflow.H{}
+
+	for rows.Next() {
+		var (
+			id        int64
+			content   string
+			createdAt time.Time
+		)
+
+		err := rows.Scan(
+			&id,
+			&content,
+			&createdAt,
+		)
+
+		if err != nil {
+			ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+				"error": "database error",
+			})
+			return
+		}
+
+		meshflows = append(meshflows, goflow.H{
+			"id":         id,
+			"content":    content,
+			"created_at": createdAt,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	ctx.SendJSON(http.StatusOK, goflow.H{
+		"id":       claims.UserID,
+		"username": claims.Username,
+		"mesflows": meshflows,
 	})
 }

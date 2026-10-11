@@ -7,18 +7,17 @@ export default function FinalCta() {
       <div className="container">
         <div className="final">
           <span className="eyebrow">katıl</span>
-          <h2 id="katil-title">Ağın bir düğümü de sen ol.</h2>
+          <h2 id="katil-title">Sen de katıl.</h2>
           <p>
-            Profilini oluştur, ilk projeni vitrine koy, ilk katkını yap.
-            Topluluk seni kodunla karşılayacak.
+            Profilini oluştur, ilk meshflow’unu paylaş. Kalanı birkaç tık.
           </p>
           <div className="hero-ctas">
-            <a href="#top" className="btn btn-primary btn-lg">
+            <a href="/register" className="btn btn-primary btn-lg">
               Hesap Oluştur
               <ArrowRight aria-hidden="true" />
             </a>
             <a
-              href="https://github.com"
+              href="https://github.com/coderianx/SourceMesh"
               target="_blank"
               rel="noreferrer"
               className="btn btn-secondary btn-lg"
@@ -27,7 +26,7 @@ export default function FinalCta() {
               Önce Kodu Gör
             </a>
           </div>
-          <p className="final-note">ücretsiz · açık kaynak · verilerin dışa aktarılabilir</p>
+          <p className="final-note">kayıt ücretsiz · açık kaynak · geliştiriciler için</p>
         </div>
       </div>
     </section>

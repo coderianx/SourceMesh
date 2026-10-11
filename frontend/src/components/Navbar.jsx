@@ -6,9 +6,7 @@ import logo from '../assets/logo.svg';
 const LINKS = [
   { href: '#ozellikler', label: 'Özellikler' },
   { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
-  { href: '#kesfet', label: 'Keşfet' },
   { href: '#acik-kaynak', label: 'Açık Kaynak' },
-  { href: '#topluluk', label: 'Topluluk' },
 ];
 
 export default function Navbar() {
@@ -21,7 +19,6 @@ export default function Navbar() {
           <a href="#top" className="brand" aria-label="SourceMesh ana sayfa">
             <img src={logo} alt="" width="28" height="28" className="brand-logo" />
             SourceMesh
-            <span className="brand-beta">Beta</span>
           </a>
 
           <nav className="nav-links" aria-label="Ana gezinti">
@@ -35,7 +32,7 @@ export default function Navbar() {
           <div className="nav-actions">
             <a
               className="nav-github"
-              href="https://github.com"
+              href="https://github.com/coderianx/SourceMesh"
               target="_blank"
               rel="noreferrer"
               aria-label="GitHub reposu (yeni sekmede açılır)"
@@ -43,10 +40,10 @@ export default function Navbar() {
               <GithubIcon />
               GitHub
             </a>
-            <a href="#katil" className="btn btn-ghost">
+            <a href="/login" className="btn btn-ghost">
               Giriş Yap
             </a>
-            <a href="#katil" className="btn btn-primary nav-cta">
+            <a href="/register" className="btn btn-primary nav-cta">
               Hemen Katıl
             </a>
             <button
@@ -71,10 +68,10 @@ export default function Navbar() {
           ))}
         </nav>
         <div className="mobile-actions">
-          <a href="#katil" className="btn btn-secondary" style={{ flex: 1 }}>
+          <a href="/login" className="btn btn-secondary" style={{ flex: 1 }}>
             Giriş Yap
           </a>
-          <a href="#katil" className="btn btn-primary" style={{ flex: 1 }}>
+          <a href="/register" className="btn btn-primary" style={{ flex: 1 }}>
             Hemen Katıl
           </a>
         </div>
