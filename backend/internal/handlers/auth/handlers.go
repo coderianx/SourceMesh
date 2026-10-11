@@ -3,10 +3,18 @@ package auth
 import (
 	"SourceMeshBackend/internal/models"
 	"SourceMeshBackend/internal/store"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/coderianx/goflow"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -32,6 +40,14 @@ func Register(
 		ctx.SendJSON(http.StatusBadRequest, goflow.H{
 			"error": "username is required",
 		})
+		return
+	}
+
+	if len(req.Username) > 20 {
+		ctx.SendJSON(http.StatusBadRequest, goflow.H{
+			"error": "username is too long",
+		})
+
 		return
 	}
 
@@ -90,5 +106,387 @@ func Register(
 
 	ctx.SendJSON(201, goflow.H{
 		"message": "user created",
+	})
+}
+
+func Login(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	ctx := goflow.Context(w, r)
+
+	secretKey := os.Getenv("JWT_SECRET")
+
+	if secretKey == "" {
+		ctx.SendJSON(500, goflow.H{
+			"error": "secret error",
+		})
+
+		fmt.Println("[WARNING] JWT_SECRET is empty")
+
+		return
+	}
+
+	var req models.LoginReq
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusBadRequest, goflow.H{
+			"error": "invalid request",
+		})
+		return
+	}
+
+	if req.Username == "" {
+		ctx.SendJSON(http.StatusBadRequest, goflow.H{
+			"error": "username is required",
+		})
+
+		return
+	}
+
+	if len(req.Username) > 20 {
+		ctx.SendJSON(http.StatusBadRequest, goflow.H{
+			"error": "username is too long",
+		})
+
+		return
+	}
+
+	if len(req.Password) < 6 {
+		ctx.SendJSON(http.StatusBadRequest, goflow.H{
+			"error": "password is too short",
+		})
+
+		return
+	}
+
+	var (
+		userID     int64
+		passwordDB string
+	)
+
+	err = store.DB.QueryRow(
+		r.Context(),
+		`
+		SELECT id, password
+		FROM users
+		WHERE username = $1;
+		`,
+		req.Username,
+	).Scan(
+		&userID,
+		passwordDB,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			ctx.SendJSON(401, goflow.H{
+				"error": "invalid credentials",
+			})
+			return
+		}
+
+		ctx.SendJSON(500, goflow.H{
+			"error": "Database error",
+		})
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword(
+		[]byte(passwordDB),
+		[]byte(req.Password),
+	)
+
+	if err != nil {
+		ctx.SendJSON(401, goflow.H{
+			"error": "invalid credentials",
+		})
+		return
+	}
+
+	claims := models.Claims{
+		UserID:   userID,
+		Username: req.Username,
+
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt: jwt.NewNumericDate(
+				time.Now(),
+			),
+
+			ExpiresAt: jwt.NewNumericDate(
+				time.Now().Add(30 * time.Minute),
+			),
+		},
+	}
+
+	access := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		claims,
+	)
+
+	accessToken, err := access.SignedString(secretKey)
+
+	if err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "jwt token error",
+		})
+		return
+	}
+
+	// Create refresh token
+	randomToken, err := generateRefreshToken(64)
+
+	if err != nil {
+		randomToken = ""
+	} else {
+		sum := sha256.Sum256([]byte(randomToken))
+		hashedToken := hex.EncodeToString(sum[:])
+
+		_, err = store.DB.Exec(
+			r.Context(),
+			`
+			INSERT INTO refresh_tokens (
+				user_id, token, expire_at
+			)
+			VALUES ($1,$2,$3);
+			`,
+			userID,
+			hashedToken,
+			time.Now().Add(30*24*time.Hour),
+		)
+
+		if err != nil {
+			randomToken = ""
+		}
+	}
+
+	ctx.SendJSON(200, goflow.H{
+		"message":      "login OK",
+		"accessToken":  accessToken,
+		"refreshToken": randomToken,
+	})
+}
+
+func Refresh(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	ctx := goflow.Context(w, r)
+
+	secret := os.Getenv("JWT_SECRET")
+
+	if secret == "" {
+		ctx.SendJSON(500, goflow.H{
+			"error": "secret error",
+		})
+		return
+	}
+
+	var req models.RefreshTokenReq
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusBadRequest, goflow.H{
+			"error": "invalid request",
+		})
+
+		return
+	}
+
+	if req.RefreshToken == "" {
+		ctx.SendJSON(http.StatusBadRequest, goflow.H{
+			"error": "'token' is required",
+		})
+
+		return
+	}
+
+	refreshTokenHash := sha256.Sum256(
+		[]byte(req.RefreshToken),
+	)
+
+	var (
+		userID     int64
+		usernameDB string
+		expiresAt  time.Time
+	)
+
+	// start tx
+	tx, err := store.DB.Begin(r.Context())
+	if err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "tx error",
+		})
+		return
+	}
+
+	defer tx.Rollback(r.Context())
+
+	err = tx.QueryRow(
+		r.Context(),
+		`
+		SELECT user_id, expires_at
+		FROM refresh_tokens
+		WHERE token = $1;
+		`,
+		hex.EncodeToString(refreshTokenHash[:]),
+	).Scan(
+		&userID,
+		&expiresAt,
+	)
+
+	if err != nil {
+
+		if errors.Is(err, pgx.ErrNoRows) {
+			ctx.SendJSON(409, goflow.H{
+				"error": "invalid refresh token",
+			})
+
+			return
+		}
+
+		ctx.SendJSON(500, goflow.H{
+			"error": "Database error",
+		})
+
+		return
+	}
+
+	err = tx.QueryRow(
+		r.Context(),
+		`
+		SELECT username
+		FROM users
+		WHERE id = $1
+		`,
+		userID,
+	).Scan(
+		&usernameDB,
+	)
+
+	if err != nil {
+
+		if errors.Is(err, pgx.ErrNoRows) {
+			ctx.SendJSON(409, goflow.H{
+				"error": "invalid credentials",
+			})
+
+			return
+		}
+
+		ctx.SendJSON(500, goflow.H{
+			"error": "Database error",
+		})
+
+		return
+	}
+
+	if time.Now().After(expiresAt) {
+		ctx.SendJSON(http.StatusUnauthorized, goflow.H{
+			"error": "refresh token expired",
+		})
+
+		return
+	}
+
+	result, err := tx.Exec(
+		r.Context(),
+		`
+		DELETE FROM refresh_tokens
+		WHERE token = $1
+		`,
+		hex.EncodeToString(refreshTokenHash[:]),
+	)
+
+	if err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "database error",
+		})
+
+		return
+	}
+
+	if result.RowsAffected() == 0 {
+		ctx.SendJSON(500, goflow.H{
+			"error": "database error",
+		})
+
+		return
+	}
+
+	claims := models.Claims{
+		UserID:   userID,
+		Username: usernameDB,
+
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt: jwt.NewNumericDate(
+				time.Now(),
+			),
+
+			ExpiresAt: jwt.NewNumericDate(
+				time.Now().Add(30 * time.Minute),
+			),
+		},
+	}
+
+	access := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		claims,
+	)
+
+	accessToken, err := access.SignedString(secret)
+
+	if err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "jwt error",
+		})
+		return
+	}
+
+	randomToken, err := generateRefreshToken(64)
+
+	if err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "refresh token generation error",
+		})
+
+		return
+	}
+
+	refreshToken := sha256.Sum256([]byte(randomToken))
+
+	_, err = tx.Exec(
+		r.Context(),
+		`
+		INSERT INTO refresh_tokens (user_id, token)
+		VALUES ($1,$2)
+		`,
+		userID,
+		hex.EncodeToString(refreshToken[:]),
+	)
+
+	if err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "database error",
+		})
+
+		return
+	}
+
+	err = tx.Commit(r.Context())
+
+	if err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "tx commit error",
+		})
+		return
+	}
+
+	ctx.SendJSON(200, goflow.H{
+		"accessToken":  accessToken,
+		"refreshToken": randomToken,
 	})
 }

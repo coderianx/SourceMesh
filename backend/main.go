@@ -1,6 +1,7 @@
 package main
 
 import (
+	"SourceMeshBackend/internal/handlers/auth"
 	"SourceMeshBackend/internal/store"
 	"fmt"
 	"net/http"
@@ -28,7 +29,11 @@ func main() {
 	router := chi.NewRouter()
 
 	router.Route("/api/v1", func(r chi.Router) {
-
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/register", auth.Register)
+			r.Post("/login", auth.Login)
+			r.Post("/refresh", auth.Refresh)
+		})
 	})
 
 	// Start server
