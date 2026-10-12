@@ -137,5 +137,19 @@
   "MeshWrite — SourceMesh": "MeshWrite — SourceMesh",
   "Loading MeshWrite…": "MeshWrite yükleniyor…",
   "This MeshWrite could not be found.": "Bu MeshWrite bulunamadı.",
-  "The MeshWrite could not be loaded. Please try again.": "MeshWrite yüklenemedi. Lütfen tekrar dene."
+  "The MeshWrite could not be loaded. Please try again.": "MeshWrite yüklenemedi. Lütfen tekrar dene.",
+  "Dashboard": "Panel",
+  "Dashboard — SourceMesh": "Panel — SourceMesh",
+  "Feed": "Akış",
+  "Theme": "Tema",
+  "The most recent MeshWrites from the network.": "Ağdaki en yeni MeshWrite’lar.",
+  "Loading feed…": "Akış yükleniyor…",
+  "The feed could not be loaded. Please try again.": "Akış yüklenemedi. Lütfen tekrar dene.",
+  "No MeshWrites yet. Be the first to write one.": "Henüz MeshWrite yok. İlk yazan sen ol.",
+  "Save": "Kaydet",
+  "Saved": "Kaydedilenler",
+  "Remove from saved": "Kaydedilenlerden kaldır",
+  "Loading saved MeshWrites…": "Kaydedilen MeshWrite’lar yükleniyor…",
+  "The saved MeshWrites could not be loaded. Please try again.": "Kaydedilen MeshWrite’lar yüklenemedi. Lütfen tekrar dene.",
+  "You haven't saved a MeshWrite yet.": "Henüz bir MeshWrite kaydetmedin."
 }

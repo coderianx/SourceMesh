@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import Dashboard from './components/Dashboard.jsx'
 import Login from './components/Login.jsx'
 import MeshWriteNew from './components/MeshWriteNew.jsx'
 import MeshWriteView from './components/MeshWriteView.jsx'
@@ -17,6 +18,7 @@ const ROUTES = {
   '/login': Login,
   '/profile': Profile,
   '/register': Register,
+  '/dashboard': Dashboard,
   '/meshwrite/new': MeshWriteNew,
 }
 

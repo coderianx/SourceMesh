@@ -3,7 +3,13 @@ import { Settings } from 'lucide-react';
 import LanguagePicker from './LanguagePicker.jsx';
 import { t } from '../lib/i18n.js';
 
-export default function SettingsMenu({ children }) {
+export default function SettingsMenu({
+  children,
+  trigger,
+  triggerClassName = 'icon-button',
+  wrapperClassName = '',
+  menuClassName = '',
+}) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -34,19 +40,25 @@ export default function SettingsMenu({ children }) {
   }, [open]);
 
   return (
-    <div className="settings-menu-wrap" ref={menuRef}>
+    <div
+      className={`settings-menu-wrap${wrapperClassName ? ` ${wrapperClassName}` : ''}`}
+      ref={menuRef}
+    >
       <button
         type="button"
-        className="icon-button"
+        className={triggerClassName}
         aria-label={t('Settings')}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <Settings aria-hidden="true" />
+        {trigger ?? <Settings aria-hidden="true" />}
       </button>
       {open && (
-        <div className="settings-menu" role="menu">
+        <div
+          className={`settings-menu${menuClassName ? ` ${menuClassName}` : ''}`}
+          role="menu"
+        >
           {children && <div className="settings-section">{children}</div>}
           <LanguagePicker />
         </div>

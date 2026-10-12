@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import SaveButton from './SaveButton.jsx';
+import { getAccessToken } from '../lib/auth.js';
 import { formatDate } from '../lib/format.js';
 import { t } from '../lib/i18n.js';
 import logo from '../assets/logo.svg';
@@ -24,8 +26,12 @@ export default function MeshWriteView({ id }) {
       setStatus('loading');
 
       try {
+        const token = getAccessToken();
         const response = await fetch(
           `/api/v1/meshwrite/${encodeURIComponent(id)}`,
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          },
         );
 
         if (response.status === 400 || response.status === 404) {
@@ -115,15 +121,18 @@ export default function MeshWriteView({ id }) {
             </div>
           ) : (
             <article className="mw-view">
-              <header>
-                <h1 className="mw-view-title">{write.title}</h1>
-                <p className="mw-view-meta">
-                  <a href={`/@${encodeURIComponent(write.username)}`}>
-                    @{write.username}
-                  </a>
-                  <span aria-hidden="true">·</span>
-                  <time dateTime={write.created_at}>{formatDate(write.created_at)}</time>
-                </p>
+              <header className="mw-view-head">
+                <div className="mw-view-head-main">
+                  <h1 className="mw-view-title">{write.title}</h1>
+                  <p className="mw-view-meta">
+                    <a href={`/@${encodeURIComponent(write.username)}`}>
+                      @{write.username}
+                    </a>
+                    <span aria-hidden="true">·</span>
+                    <time dateTime={write.created_at}>{formatDate(write.created_at)}</time>
+                  </p>
+                </div>
+                <SaveButton meshwriteId={write.id} saved={write.saved} />
               </header>
               <div className="mw-markdown mw-view-body">
                 <Markdown remarkPlugins={[remarkGfm]}>{write.content}</Markdown>

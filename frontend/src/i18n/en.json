@@ -137,5 +137,19 @@
   "MeshWrite — SourceMesh": "MeshWrite — SourceMesh",
   "Loading MeshWrite…": "Loading MeshWrite…",
   "This MeshWrite could not be found.": "This MeshWrite could not be found.",
-  "The MeshWrite could not be loaded. Please try again.": "The MeshWrite could not be loaded. Please try again."
+  "The MeshWrite could not be loaded. Please try again.": "The MeshWrite could not be loaded. Please try again.",
+  "Dashboard": "Dashboard",
+  "Dashboard — SourceMesh": "Dashboard — SourceMesh",
+  "Feed": "Feed",
+  "Theme": "Theme",
+  "The most recent MeshWrites from the network.": "The most recent MeshWrites from the network.",
+  "Loading feed…": "Loading feed…",
+  "The feed could not be loaded. Please try again.": "The feed could not be loaded. Please try again.",
+  "No MeshWrites yet. Be the first to write one.": "No MeshWrites yet. Be the first to write one.",
+  "Save": "Save",
+  "Saved": "Saved",
+  "Remove from saved": "Remove from saved",
+  "Loading saved MeshWrites…": "Loading saved MeshWrites…",
+  "The saved MeshWrites could not be loaded. Please try again.": "The saved MeshWrites could not be loaded. Please try again.",
+  "You haven't saved a MeshWrite yet.": "You haven't saved a MeshWrite yet."
 }

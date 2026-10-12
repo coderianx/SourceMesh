@@ -1,9 +1,10 @@
 import { t } from '../lib/i18n.js';
 
-export default function ProfileTabs({ active, onChange }) {
+export default function ProfileTabs({ active, onChange, showSaved = false }) {
   const tabs = [
     { id: 'posts', label: t('Posts') },
     { id: 'meshwrites', label: 'MeshWrites' },
+    ...(showSaved ? [{ id: 'saved', label: t('Saved') }] : []),
   ];
 
   return (

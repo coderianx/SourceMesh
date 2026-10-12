@@ -18,11 +18,16 @@ export default function Profile() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
-  const [tab, setTab] = useState(getProfileTabFromUrl);
+  const [tab, setTab] = useState(() =>
+    getProfileTabFromUrl(['posts', 'meshwrites', 'saved']),
+  );
   const [composerOpen, setComposerOpen] = useState(false);
   const [content, setContent] = useState('');
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState('');
+  const [saves, setSaves] = useState(null);
+  const [savesError, setSavesError] = useState(false);
+  const [savesAttempt, setSavesAttempt] = useState(0);
 
   const composerVisible = composerOpen && tab === 'posts';
 
@@ -96,6 +101,68 @@ export default function Profile() {
       cancelled = true;
     };
   }, [attempt]);
+
+  // Saved meshwrites are only loaded when the "Saved" tab is opened, so the
+  // list stays fresh after saving or removing items elsewhere.
+  useEffect(() => {
+    if (tab !== 'saved') {
+      return undefined;
+    }
+
+    const token = getAccessToken();
+
+    if (!token) {
+      window.location.replace('/login');
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    async function loadSaves() {
+      setSavesError(false);
+
+      try {
+        const response = await fetch('/api/v1/meshwrite/saved', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 401) {
+          clearTokens();
+          window.location.replace('/login');
+          return;
+        }
+
+        let data = {};
+
+        try {
+          data = await response.json();
+        } catch {
+          data = {};
+        }
+
+        if (!response.ok) {
+          if (!cancelled) {
+            setSavesError(true);
+          }
+          return;
+        }
+
+        if (!cancelled) {
+          setSaves(Array.isArray(data.meshwrites) ? data.meshwrites : []);
+        }
+      } catch {
+        if (!cancelled) {
+          setSavesError(true);
+        }
+      }
+    }
+
+    loadSaves();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [tab, savesAttempt]);
 
   function handleLogout() {
     clearTokens();
@@ -244,7 +311,7 @@ export default function Profile() {
               </ProfileHeader>
 
               <section className="profile-feed">
-                <ProfileTabs active={tab} onChange={setTab} />
+                <ProfileTabs active={tab} onChange={setTab} showSaved />
 
                 <div
                   id="profile-panel"
@@ -256,6 +323,32 @@ export default function Profile() {
                       meshwrites={user.meshwrites}
                       emptyText={t("You haven't written a MeshWrite yet.")}
                     />
+                  ) : tab === 'saved' ? (
+                    savesError ? (
+                      <div className="profile-status">
+                        <p role="alert">
+                          {t(
+                            'The saved MeshWrites could not be loaded. Please try again.',
+                          )}
+                        </p>
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          onClick={() => setSavesAttempt((value) => value + 1)}
+                        >
+                          {t('Retry')}
+                        </button>
+                      </div>
+                    ) : saves === null ? (
+                      <p className="profile-empty">
+                        {t('Loading saved MeshWrites…')}
+                      </p>
+                    ) : (
+                      <MeshWriteList
+                        meshwrites={saves}
+                        emptyText={t("You haven't saved a MeshWrite yet.")}
+                      />
+                    )
                   ) : (
                     <>
                       {composerVisible && (

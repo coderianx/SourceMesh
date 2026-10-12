@@ -152,6 +152,34 @@ func main() {
 		)
 
 		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				30, time.Minute,
+			),
+		).Get(
+			"/meshwrite/saved", meshwrite.ListSavedMeshWrites,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Post(
+			"/meshwrite/{id}/save", meshwrite.SaveMeshWrite,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Delete(
+			"/meshwrite/{id}/save", meshwrite.UnsaveMeshWrite,
+		)
+
+		r.With(
+			middlewares.OptionalAuth,
 			middlewares.RateLimitByIP(
 				30, time.Minute,
 			),

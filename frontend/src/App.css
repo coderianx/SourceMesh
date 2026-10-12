@@ -1707,6 +1707,11 @@ footer {
   .mw-foot .btn {
     width: 100%;
   }
+
+  .mw-view-head {
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 /* ============ MESHWRITE GÖRÜNTÜLEME SAYFASI ============ */
@@ -1742,10 +1747,326 @@ footer {
   color: var(--text);
 }
 
+.mw-view-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.mw-view-head-main {
+  min-width: 0;
+}
+
+.save-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.save-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.save-button:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.save-button.saved {
+  color: var(--accent);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.save-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .mw-view-body {
   margin-top: 28px;
   padding-top: 28px;
   border-top: 1px solid var(--border-soft);
   font-size: 17px;
   line-height: 1.75;
+}
+
+/* ============ DASHBOARD ============ */
+.dashboard-page {
+  --dash-hover: rgba(255, 255, 255, 0.05);
+  --dash-hover-strong: rgba(255, 255, 255, 0.08);
+  --dash-card-hover: rgba(255, 255, 255, 0.22);
+
+  min-height: 100svh;
+  display: flex;
+  align-items: stretch;
+  background: var(--bg-0);
+}
+
+.dashboard-page.theme-light {
+  --bg-0: #f6f6f7;
+  --bg-1: #ffffff;
+  --surface: #ffffff;
+  --border: rgba(24, 24, 27, 0.14);
+  --border-soft: rgba(24, 24, 27, 0.08);
+  --text: #18181b;
+  --muted: #52525b;
+  --faint: #8b8b93;
+  --dash-hover: rgba(24, 24, 27, 0.05);
+  --dash-hover-strong: rgba(24, 24, 27, 0.08);
+  --dash-card-hover: rgba(24, 24, 27, 0.28);
+  color-scheme: light;
+}
+
+.dash-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100svh;
+  width: 236px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 12px 14px;
+  background: var(--bg-1);
+  border-right: 1px solid var(--border-soft);
+}
+
+.dash-brand {
+  padding: 2px 10px 14px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.dash-nav {
+  display: grid;
+  gap: 3px;
+}
+
+.dash-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.dash-nav-item svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.dash-nav-item:hover {
+  color: var(--text);
+  background: var(--dash-hover);
+}
+
+.dash-nav-item.active {
+  color: var(--text);
+  background: var(--dash-hover-strong);
+}
+
+.dash-sidebar-foot {
+  margin-top: auto;
+  display: grid;
+  gap: 3px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.dash-settings {
+  width: 100%;
+}
+
+.dash-settings .settings-menu {
+  top: auto;
+  right: auto;
+  bottom: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+}
+
+.theme-light .settings-menu {
+  box-shadow: 0 16px 40px -20px rgba(24, 24, 27, 0.25);
+}
+
+.dash-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-container {
+  max-width: 760px;
+  margin-inline: auto;
+  padding: 32px 24px 96px;
+}
+
+.dash-head h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.dash-head p {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.dash-status {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.dash-status p {
+  margin-bottom: 14px;
+}
+
+.dash-feed-list {
+  list-style: none;
+  margin: 0;
+  padding: 16px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.dash-feed-list > li {
+  min-width: 0;
+}
+
+.dash-feed-card {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  transition: border-color 0.15s ease;
+}
+
+.dash-feed-card:hover {
+  border-color: var(--dash-card-hover);
+}
+
+.dash-feed-title {
+  font-size: 16.5px;
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.dash-feed-meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.dash-feed-author {
+  color: var(--muted);
+}
+
+.dash-feed-excerpt {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  .dashboard-page {
+    flex-direction: column;
+  }
+
+  .dash-sidebar {
+    position: static;
+    height: auto;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .dash-brand {
+    padding: 0 4px;
+    border-bottom: none;
+  }
+
+  .dash-nav {
+    display: flex;
+  }
+
+  .dash-nav-item {
+    width: auto;
+  }
+
+  .dash-sidebar-foot {
+    display: flex;
+    gap: 3px;
+    margin: 0 0 0 auto;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .dash-settings {
+    width: auto;
+  }
+
+  .dash-settings .settings-menu {
+    top: calc(100% + 6px);
+    right: 0;
+    bottom: auto;
+    left: auto;
+  }
+
+  .dash-container {
+    padding: 24px 18px 72px;
+  }
+}
+
+@media (max-width: 520px) {
+  .dash-brand-label,
+  .dash-label {
+    display: none;
+  }
+
+  .dash-nav-item {
+    justify-content: center;
+    padding: 10px;
+  }
 }
