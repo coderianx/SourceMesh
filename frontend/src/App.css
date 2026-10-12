@@ -1033,11 +1033,20 @@ footer {
 
 .profile-tab {
   padding: 12px 2px;
-  margin-bottom: -1px;
+  margin: 0 0 -1px;
+  background: none;
+  border: none;
   border-bottom: 2px solid transparent;
+  font-family: inherit;
   font-size: 14.5px;
   font-weight: 600;
   color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.profile-tab:hover {
+  color: var(--text);
 }
 
 .profile-tab.active {
@@ -1344,4 +1353,399 @@ footer {
   .profile-actions {
     padding-bottom: 4px;
   }
+}
+
+/* ============ MESHWRITE ============ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.meshwrite-grid {
+  list-style: none;
+  margin: 0;
+  padding: 20px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 12px;
+}
+
+.meshwrite-grid > li {
+  min-width: 0;
+}
+
+.meshwrite-card {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 16px;
+  font-family: inherit;
+  color: var(--text);
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.meshwrite-card {
+  text-decoration: none;
+}
+
+.meshwrite-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.meshwrite-title {
+  font-size: 15.5px;
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+}
+
+.meshwrite-excerpt {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+}
+
+.mw-page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mw-main {
+  flex: 1;
+  padding: 24px 0 80px;
+}
+
+.mw-form {
+  display: grid;
+  gap: 16px;
+}
+
+.mw-title-field {
+  display: grid;
+  gap: 8px;
+}
+
+.mw-field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.mw-title-input {
+  width: 100%;
+  background: var(--bg-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  padding: 12px 14px;
+  transition: border-color 0.15s ease;
+}
+
+.mw-title-input::placeholder {
+  color: var(--faint);
+  font-weight: 500;
+}
+
+.mw-title-input:focus {
+  border-color: var(--accent);
+}
+
+.mw-editor {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mw-pane {
+  min-width: 0;
+  height: 440px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.mw-pane:focus-within {
+  border-color: var(--accent);
+}
+
+.mw-pane-head {
+  display: block;
+  margin: 0;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.mw-textarea {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  resize: none;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 14px;
+}
+
+.mw-textarea::placeholder {
+  color: var(--faint);
+}
+
+.mw-textarea:focus,
+.mw-textarea:focus-visible {
+  outline: none;
+}
+
+.mw-preview {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 14px 16px;
+}
+
+.mw-markdown {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.mw-preview-empty {
+  font-size: 14px;
+  color: var(--faint);
+}
+
+.mw-markdown > :first-child {
+  margin-top: 0;
+}
+
+.mw-markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.mw-markdown h1,
+.mw-markdown h2,
+.mw-markdown h3,
+.mw-markdown h4,
+.mw-markdown h5,
+.mw-markdown h6 {
+  margin: 1.1em 0 0.5em;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.mw-markdown h1 {
+  font-size: 1.5em;
+}
+
+.mw-markdown h2 {
+  font-size: 1.3em;
+}
+
+.mw-markdown h3 {
+  font-size: 1.15em;
+}
+
+.mw-markdown h4,
+.mw-markdown h5,
+.mw-markdown h6 {
+  font-size: 1em;
+  color: var(--muted);
+}
+
+.mw-markdown p,
+.mw-markdown ul,
+.mw-markdown ol,
+.mw-markdown blockquote,
+.mw-markdown pre,
+.mw-markdown table {
+  margin: 0 0 0.9em;
+}
+
+.mw-markdown ul,
+.mw-markdown ol {
+  padding-left: 1.4em;
+}
+
+.mw-markdown li + li {
+  margin-top: 0.25em;
+}
+
+.mw-markdown a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.mw-markdown blockquote {
+  padding-left: 14px;
+  border-left: 3px solid var(--border);
+  color: var(--muted);
+}
+
+.mw-markdown hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1.2em 0;
+}
+
+.mw-markdown code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mw-markdown pre {
+  padding: 12px 14px;
+  overflow-x: auto;
+  background: var(--bg-0);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-m);
+}
+
+.mw-markdown pre code {
+  padding: 0;
+  background: none;
+  font-size: 13.5px;
+}
+
+.mw-markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.mw-markdown th,
+.mw-markdown td {
+  padding: 6px 10px;
+  border: 1px solid var(--border-soft);
+  text-align: left;
+}
+
+.mw-markdown th {
+  font-weight: 650;
+}
+
+.mw-markdown img {
+  max-width: 100%;
+  height: auto;
+}
+
+.mw-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mw-foot .auth-error {
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .mw-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mw-pane {
+    height: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mw-main {
+    padding-top: 16px;
+  }
+
+  .mw-title-input {
+    font-size: 18px;
+  }
+
+  .mw-foot .btn {
+    width: 100%;
+  }
+}
+
+/* ============ MESHWRITE GÖRÜNTÜLEME SAYFASI ============ */
+.mw-view {
+  max-width: 720px;
+  padding-top: 32px;
+}
+
+.mw-view-title {
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.mw-view-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--faint);
+}
+
+.mw-view-meta a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.mw-view-meta a:hover {
+  color: var(--text);
+}
+
+.mw-view-body {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border-soft);
+  font-size: 17px;
+  line-height: 1.75;
 }

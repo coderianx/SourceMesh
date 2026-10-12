@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"SourceMeshBackend/internal/handlers/meshwrite"
 	"SourceMeshBackend/internal/middlewares"
 	"SourceMeshBackend/internal/models"
 	"SourceMeshBackend/internal/store"
@@ -583,9 +584,22 @@ func GetMe(
 		return
 	}
 
+	meshwrites, err := meshwrite.ListUserMeshWrites(
+		r.Context(),
+		claims.UserID,
+	)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
 	ctx.SendJSON(http.StatusOK, goflow.H{
-		"id":       claims.UserID,
-		"username": claims.Username,
-		"mesflows": meshflows,
+		"id":         claims.UserID,
+		"username":   claims.Username,
+		"mesflows":   meshflows,
+		"meshwrites": meshwrites,
 	})
 }

@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import Login from './components/Login.jsx'
+import MeshWriteNew from './components/MeshWriteNew.jsx'
+import MeshWriteView from './components/MeshWriteView.jsx'
 import Profile from './components/Profile.jsx'
 import PublicProfile from './components/PublicProfile.jsx'
 import Register from './components/Register.jsx'
@@ -15,6 +17,7 @@ const ROUTES = {
   '/login': Login,
   '/profile': Profile,
   '/register': Register,
+  '/meshwrite/new': MeshWriteNew,
 }
 
 function safeDecode(value) {
@@ -27,6 +30,7 @@ function safeDecode(value) {
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
 const profileMatch = path.match(/^\/@([^/]+)$/)
+const meshwriteViewMatch = path.match(/^\/meshwrite\/view\/([^/]+)$/)
 const redirectToProfile = isAuthenticated() && (path === '/' || path === '/login')
 const Page = ROUTES[path] || App
 
@@ -38,6 +42,8 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     {redirectToProfile ? null : profileMatch ? (
       <PublicProfile username={safeDecode(profileMatch[1])} />
+    ) : meshwriteViewMatch ? (
+      <MeshWriteView id={safeDecode(meshwriteViewMatch[1])} />
     ) : (
       <Page />
     )}

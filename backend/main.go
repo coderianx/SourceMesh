@@ -3,6 +3,7 @@ package main
 import (
 	"SourceMeshBackend/internal/handlers/auth"
 	"SourceMeshBackend/internal/handlers/meshflow"
+	"SourceMeshBackend/internal/handlers/meshwrite"
 	"SourceMeshBackend/internal/handlers/public"
 	"SourceMeshBackend/internal/middlewares"
 	"SourceMeshBackend/internal/store"
@@ -31,6 +32,8 @@ func main() {
 	store.ConnectPostresql()
 	// Create tables
 	store.CreateTables()
+	// Refresh meshwrite cache in the background
+	store.StartMeshWriteCache()
 
 	// Router
 	router := chi.NewRouter()
@@ -120,6 +123,40 @@ func main() {
 			),
 		).Delete(
 			"/meshflow/{id}/like", meshflow.UnlikeMeshflow,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Post(
+			"/meshwrite", meshwrite.NewMeshWrite,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Delete(
+			"/meshwrite/{id}", meshwrite.DeleteMeshWrite,
+		)
+
+		r.With(
+			middlewares.RateLimitByIP(
+				30, time.Minute,
+			),
+		).Get(
+			"/meshwrite/latest", meshwrite.LastMeshWrites,
+		)
+
+		r.With(
+			middlewares.RateLimitByIP(
+				30, time.Minute,
+			),
+		).Get(
+			"/meshwrite/{id}", meshwrite.GetMeshWrite,
 		)
 
 		r.With(

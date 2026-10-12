@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react';
 import { LogOut, UserRound } from 'lucide-react';
 import Comments from './Comments.jsx';
 import FlowPost from './FlowPost.jsx';
-import SettingsMenu from './SettingsMenu.jsx';
+import MeshWriteList from './MeshWriteList.jsx';
+import NewMenu from './NewMenu.jsx';
 import ProfileHeader from './ProfileHeader.jsx';
+import ProfileTabs from './ProfileTabs.jsx';
+import SettingsMenu from './SettingsMenu.jsx';
 import { clearTokens, getAccessToken } from '../lib/auth.js';
+import { getProfileTabFromUrl } from '../lib/profileTabs.js';
 import { t } from '../lib/i18n.js';
 import logo from '../assets/logo.svg';
 import '../App.css';
@@ -14,10 +18,13 @@ export default function Profile() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
+  const [tab, setTab] = useState(getProfileTabFromUrl);
   const [composerOpen, setComposerOpen] = useState(false);
   const [content, setContent] = useState('');
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState('');
+
+  const composerVisible = composerOpen && tab === 'posts';
 
   useEffect(() => {
     document.title = t('Profile — SourceMesh');
@@ -64,7 +71,11 @@ export default function Profile() {
         }
 
         if (!cancelled) {
-          setUser({ ...data, mesflows: data.mesflows || [] });
+          setUser({
+            ...data,
+            mesflows: data.mesflows || [],
+            meshwrites: data.meshwrites || [],
+          });
         }
       } catch {
         if (!cancelled) {
@@ -89,6 +100,11 @@ export default function Profile() {
   function handleLogout() {
     clearTokens();
     window.location.replace('/');
+  }
+
+  function openMeshFlowComposer() {
+    setTab('posts');
+    setComposerOpen(true);
   }
 
   async function handleCreate(event) {
@@ -222,83 +238,88 @@ export default function Profile() {
                 id={user.id}
                 count={user.mesflows.length}
               >
-                {!composerOpen && (
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    onClick={() => setComposerOpen(true)}
-                  >
-                    + Create MeshFlow
-                  </button>
+                {!composerVisible && (
+                  <NewMenu onNewMeshFlow={openMeshFlowComposer} />
                 )}
               </ProfileHeader>
 
-              <section className="profile-feed" aria-labelledby="profile-feed-title">
-                <div className="profile-tabs">
-                  <h2 id="profile-feed-title" className="profile-tab active">
-                    {t('Posts')}
-                  </h2>
-                </div>
+              <section className="profile-feed">
+                <ProfileTabs active={tab} onChange={setTab} />
 
-                {composerOpen && (
-                  <form className="composer" onSubmit={handleCreate}>
-                    <textarea
-                      id="meshflow-content"
-                      className="composer-input"
-                      aria-label={t('New meshflow')}
-                      rows={3}
-                      maxLength={1000}
-                      placeholder={t('What are you building?')}
-                      value={content}
-                      onChange={(event) => setContent(event.target.value)}
-                      autoFocus
+                <div
+                  id="profile-panel"
+                  role="tabpanel"
+                  aria-labelledby={`profile-tab-${tab}`}
+                >
+                  {tab === 'meshwrites' ? (
+                    <MeshWriteList
+                      meshwrites={user.meshwrites}
+                      emptyText={t("You haven't written a MeshWrite yet.")}
                     />
-                    <div className="composer-foot">
-                      <span className="composer-count">{[...content].length}/1000</span>
-                      <div className="composer-actions">
-                        <button
-                          type="button"
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => {
-                            setComposerOpen(false);
-                            setContent('');
-                            setPostError('');
-                          }}
-                        >
-                          {t('Discard')}
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn btn-primary btn-sm"
-                          disabled={posting || !content.trim()}
-                        >
-                          {posting ? t('Sharing…') : t('Share')}
-                        </button>
-                      </div>
-                    </div>
-                    {postError && (
-                      <p className="auth-error" role="alert">
-                        {postError}
-                      </p>
-                    )}
-                  </form>
-                )}
+                  ) : (
+                    <>
+                      {composerVisible && (
+                        <form className="composer" onSubmit={handleCreate}>
+                          <textarea
+                            id="meshflow-content"
+                            className="composer-input"
+                            aria-label={t('New meshflow')}
+                            rows={3}
+                            maxLength={1000}
+                            placeholder={t('What are you building?')}
+                            value={content}
+                            onChange={(event) => setContent(event.target.value)}
+                            autoFocus
+                          />
+                          <div className="composer-foot">
+                            <span className="composer-count">{[...content].length}/1000</span>
+                            <div className="composer-actions">
+                              <button
+                                type="button"
+                                className="btn btn-ghost btn-sm"
+                                onClick={() => {
+                                  setComposerOpen(false);
+                                  setContent('');
+                                  setPostError('');
+                                }}
+                              >
+                                {t('Discard')}
+                              </button>
+                              <button
+                                type="submit"
+                                className="btn btn-primary btn-sm"
+                                disabled={posting || !content.trim()}
+                              >
+                                {posting ? t('Sharing…') : t('Share')}
+                              </button>
+                            </div>
+                          </div>
+                          {postError && (
+                            <p className="auth-error" role="alert">
+                              {postError}
+                            </p>
+                          )}
+                        </form>
+                      )}
 
-                {user.mesflows.length === 0 ? (
-                  <p className="profile-empty">
-                    {t(
-                      "You haven't shared a meshflow yet. It will appear here once you create your first post.",
-                    )}
-                  </p>
-                ) : (
-                  <div className="post-list">
-                    {user.mesflows.map((flow) => (
-                      <FlowPost key={flow.id} username={user.username} flow={flow}>
-                        <Comments meshflowId={flow.id} />
-                      </FlowPost>
-                    ))}
-                  </div>
-                )}
+                      {user.mesflows.length === 0 ? (
+                        <p className="profile-empty">
+                          {t(
+                            "You haven't shared a meshflow yet. It will appear here once you create your first post.",
+                          )}
+                        </p>
+                      ) : (
+                        <div className="post-list">
+                          {user.mesflows.map((flow) => (
+                            <FlowPost key={flow.id} username={user.username} flow={flow}>
+                              <Comments meshflowId={flow.id} />
+                            </FlowPost>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
               </section>
             </div>
           </>

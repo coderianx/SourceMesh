@@ -1,6 +1,7 @@
 package public
 
 import (
+	"SourceMeshBackend/internal/handlers/meshwrite"
 	"SourceMeshBackend/internal/middlewares"
 	"SourceMeshBackend/internal/store"
 	"errors"
@@ -140,9 +141,22 @@ func GetProfileByUsername(
 		return
 	}
 
+	meshwrites, err := meshwrite.ListUserMeshWrites(
+		r.Context(),
+		userID,
+	)
+
+	if err != nil {
+		ctx.SendJSON(http.StatusInternalServerError, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
 	ctx.SendJSON(http.StatusOK, goflow.H{
-		"id":       userID,
-		"username": username,
-		"mesflows": meshflows,
+		"id":         userID,
+		"username":   username,
+		"mesflows":   meshflows,
+		"meshwrites": meshwrites,
 	})
 }

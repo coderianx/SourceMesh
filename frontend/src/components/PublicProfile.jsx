@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import Comments from './Comments.jsx';
 import FlowPost from './FlowPost.jsx';
+import MeshWriteList from './MeshWriteList.jsx';
 import ProfileHeader from './ProfileHeader.jsx';
+import ProfileTabs from './ProfileTabs.jsx';
 import SettingsMenu from './SettingsMenu.jsx';
 import { isAuthenticated } from '../lib/auth.js';
+import { getProfileTabFromUrl } from '../lib/profileTabs.js';
 import { t } from '../lib/i18n.js';
 import logo from '../assets/logo.svg';
 import '../App.css';
@@ -15,6 +18,7 @@ export default function PublicProfile({ username }) {
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
+  const [tab, setTab] = useState(getProfileTabFromUrl);
 
   useEffect(() => {
     document.title = `@${username} — SourceMesh`;
@@ -56,7 +60,11 @@ export default function PublicProfile({ username }) {
         }
 
         if (!cancelled) {
-          setUser({ ...data, mesflows: data.mesflows || [] });
+          setUser({
+            ...data,
+            mesflows: data.mesflows || [],
+            meshwrites: data.meshwrites || [],
+          });
         }
       } catch {
         if (!cancelled) {
@@ -135,26 +143,33 @@ export default function PublicProfile({ username }) {
                 count={user.mesflows.length}
               />
 
-              <section className="profile-feed" aria-labelledby="public-feed-title">
-                <div className="profile-tabs">
-                  <h2 id="public-feed-title" className="profile-tab active">
-                    {t('Posts')}
-                  </h2>
-                </div>
+              <section className="profile-feed">
+                <ProfileTabs active={tab} onChange={setTab} />
 
-                {user.mesflows.length === 0 ? (
-                  <p className="profile-empty">
-                    {t("This user hasn't shared a meshflow yet.")}
-                  </p>
-                ) : (
-                  <div className="post-list">
-                    {user.mesflows.map((flow) => (
-                      <FlowPost key={flow.id} username={user.username} flow={flow}>
-                        {authed && <Comments meshflowId={flow.id} />}
-                      </FlowPost>
-                    ))}
-                  </div>
-                )}
+                <div
+                  id="profile-panel"
+                  role="tabpanel"
+                  aria-labelledby={`profile-tab-${tab}`}
+                >
+                  {tab === 'meshwrites' ? (
+                    <MeshWriteList
+                      meshwrites={user.meshwrites}
+                      emptyText={t("This user hasn't written a MeshWrite yet.")}
+                    />
+                  ) : user.mesflows.length === 0 ? (
+                    <p className="profile-empty">
+                      {t("This user hasn't shared a meshflow yet.")}
+                    </p>
+                  ) : (
+                    <div className="post-list">
+                      {user.mesflows.map((flow) => (
+                        <FlowPost key={flow.id} username={user.username} flow={flow}>
+                          {authed && <Comments meshflowId={flow.id} />}
+                        </FlowPost>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </section>
             </div>
           </>

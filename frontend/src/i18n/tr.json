@@ -121,5 +121,21 @@
   "Sending…": "Gönderiliyor…",
   "The server could not be reached. Check your connection.": "Sunucuya ulaşılamadı. Bağlantını kontrol et.",
   "Like": "Beğen",
-  "Unlike": "Beğeniyi geri al"
+  "Unlike": "Beğeniyi geri al",
+  "Profile content": "Profil içeriği",
+  "You haven't written a MeshWrite yet.": "Henüz bir MeshWrite yazmadın.",
+  "This user hasn't written a MeshWrite yet.": "Bu kullanıcı henüz bir MeshWrite yazmamış.",
+  "New MeshWrite — SourceMesh": "Yeni MeshWrite — SourceMesh",
+  "Back to profile": "Profile dön",
+  "Title": "Başlık",
+  "Give your MeshWrite a title": "MeshWrite’ına bir başlık ver",
+  "Write in Markdown…": "Markdown ile yaz…",
+  "Nothing to preview yet.": "Önizlenecek bir şey yok.",
+  "Title is required.": "Başlık gerekli.",
+  "Title is too long.": "Başlık çok uzun.",
+  "The MeshWrite could not be created. Please try again.": "MeshWrite oluşturulamadı. Lütfen tekrar dene.",
+  "MeshWrite — SourceMesh": "MeshWrite — SourceMesh",
+  "Loading MeshWrite…": "MeshWrite yükleniyor…",
+  "This MeshWrite could not be found.": "Bu MeshWrite bulunamadı.",
+  "The MeshWrite could not be loaded. Please try again.": "MeshWrite yüklenemedi. Lütfen tekrar dene."
 }
