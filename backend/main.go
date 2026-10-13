@@ -189,6 +189,23 @@ func main() {
 		)
 
 		r.With(
+			middlewares.RateLimitByIP(
+				30, time.Minute,
+			),
+		).Get(
+			"/node/top", nodes.ListTopNodes,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				30, time.Minute,
+			),
+		).Get(
+			"/node/joined", nodes.ListJoinedNodes,
+		)
+
+		r.With(
 			middlewares.Auth,
 			middlewares.RateLimitByIP(
 				15, time.Minute,

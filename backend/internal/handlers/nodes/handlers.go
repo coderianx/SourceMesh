@@ -135,7 +135,7 @@ func CreateNewNodes(
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == "23505" {
 				ctx.SendJSON(409, goflow.H{
-					"error": "You are already a member of a node.",
+					"error": "You are already a member of this node.",
 				})
 				return
 			}
@@ -240,7 +240,7 @@ func JoinNode(
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == "23505" {
 				ctx.SendJSON(409, goflow.H{
-					"error": "You are already a member of a node.",
+					"error": "You are already a member of this node.",
 				})
 				return
 			}
@@ -465,5 +465,170 @@ func CreateNewPostInNode(
 		"title":      req.Title,
 		"content":    req.Content,
 		"created_at": createdAt,
+	})
+}
+
+// ListTopNodes returns the five nodes with the most members.
+func ListTopNodes(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	ctx := goflow.Context(w, r)
+
+	rows, err := store.DB.Query(
+		r.Context(),
+		`
+		SELECT
+			n.id,
+			n.name,
+			n.description,
+			COUNT(m.id) AS member_count
+		FROM nodes n
+		LEFT JOIN nodes_members m ON m.node_id = n.id
+		GROUP BY n.id
+		ORDER BY member_count DESC, n.name ASC
+		LIMIT 5;
+		`,
+	)
+
+	if err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	defer rows.Close()
+
+	nodes := []goflow.H{}
+
+	for rows.Next() {
+		var (
+			id          int64
+			name        string
+			description string
+			memberCount int64
+		)
+
+		if err := rows.Scan(
+			&id,
+			&name,
+			&description,
+			&memberCount,
+		); err != nil {
+			ctx.SendJSON(500, goflow.H{
+				"error": "database error",
+			})
+			return
+		}
+
+		nodes = append(nodes, goflow.H{
+			"id":           id,
+			"name":         name,
+			"description":  description,
+			"member_count": memberCount,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	ctx.SendJSON(http.StatusOK, goflow.H{
+		"nodes": nodes,
+	})
+}
+
+// ListJoinedNodes returns the nodes the user is a member of.
+func ListJoinedNodes(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	ctx := goflow.Context(w, r)
+
+	claims, ok := middlewares.GetClaims(r)
+
+	if !ok {
+		ctx.SendJSON(http.StatusUnauthorized, goflow.H{
+			"error": "unauthorized",
+		})
+		return
+	}
+
+	rows, err := store.DB.Query(
+		r.Context(),
+		`
+		SELECT
+			n.id,
+			n.name,
+			n.description,
+			m.role,
+			(
+				SELECT COUNT(*)
+				FROM nodes_members c
+				WHERE c.node_id = n.id
+			) AS member_count
+		FROM nodes_members m
+		JOIN nodes n ON n.id = m.node_id
+		WHERE m.user_id = $1
+		ORDER BY n.name ASC;
+		`,
+		claims.UserID,
+	)
+
+	if err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	defer rows.Close()
+
+	nodes := []goflow.H{}
+
+	for rows.Next() {
+		var (
+			id          int64
+			name        string
+			description string
+			role        string
+			memberCount int64
+		)
+
+		if err := rows.Scan(
+			&id,
+			&name,
+			&description,
+			&role,
+			&memberCount,
+		); err != nil {
+			ctx.SendJSON(500, goflow.H{
+				"error": "database error",
+			})
+			return
+		}
+
+		nodes = append(nodes, goflow.H{
+			"id":           id,
+			"name":         name,
+			"description":  description,
+			"role":         role,
+			"member_count": memberCount,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		ctx.SendJSON(500, goflow.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	ctx.SendJSON(http.StatusOK, goflow.H{
+		"nodes": nodes,
 	})
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { LogOut, Moon, Rss, Settings, Sun, UserRound } from 'lucide-react';
+import { LogOut, Moon, Network, Rss, Settings, Sun, UserRound } from 'lucide-react';
 import SettingsMenu from './SettingsMenu.jsx';
+import Nodes from './Nodes.jsx';
 import { clearTokens, getAccessToken } from '../lib/auth.js';
 import { formatDate } from '../lib/format.js';
 import { t } from '../lib/i18n.js';
@@ -178,6 +179,17 @@ export default function Dashboard() {
             <Rss aria-hidden="true" />
             <span className="dash-label">{t('Feed')}</span>
           </button>
+
+          <button
+            type="button"
+            className={`dash-nav-item${section === 'nodes' ? ' active' : ''}`}
+            aria-current={section === 'nodes' ? 'page' : undefined}
+            aria-label={t('Nodes')}
+            onClick={() => setSection('nodes')}
+          >
+            <Network aria-hidden="true" />
+            <span className="dash-label">{t('Nodes')}</span>
+          </button>
         </nav>
 
         <div className="dash-sidebar-foot">
@@ -236,9 +248,9 @@ export default function Dashboard() {
       </aside>
 
       <main className="dash-main">
-        <div className="dash-container">
+        <div className="dash-body">
           {section === 'feed' && (
-            <>
+            <div className="dash-container">
               <header className="dash-head">
                 <h1>{t('Feed')}</h1>
                 <p>{t('The most recent MeshWrites from the network.')}</p>
@@ -281,14 +293,18 @@ export default function Dashboard() {
                             {formatDate(write.created_at)}
                           </time>
                         </p>
-                        <p className="dash-feed-excerpt">{toExcerpt(write.content)}</p>
+                        <p className="dash-feed-excerpt">
+                          {toExcerpt(write.content)}
+                        </p>
                       </a>
                     </li>
                   ))}
                 </ul>
               )}
-            </>
+            </div>
           )}
+
+          {section === 'nodes' && <Nodes />}
         </div>
       </main>
     </div>
