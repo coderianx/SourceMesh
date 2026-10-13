@@ -4,6 +4,7 @@ import (
 	"SourceMeshBackend/internal/handlers/auth"
 	"SourceMeshBackend/internal/handlers/meshflow"
 	"SourceMeshBackend/internal/handlers/meshwrite"
+	"SourceMeshBackend/internal/handlers/nodes"
 	"SourceMeshBackend/internal/handlers/public"
 	"SourceMeshBackend/internal/middlewares"
 	"SourceMeshBackend/internal/store"
@@ -185,6 +186,42 @@ func main() {
 			),
 		).Get(
 			"/meshwrite/{id}", meshwrite.GetMeshWrite,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Post(
+			"/node", nodes.CreateNewNodes,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Post(
+			"/node/{name}/join", nodes.JoinNode,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Delete(
+			"/node/{name}/leave", nodes.LeaveNode,
+		)
+
+		r.With(
+			middlewares.Auth,
+			middlewares.RateLimitByIP(
+				15, time.Minute,
+			),
+		).Post(
+			"/node/{name}/posts", nodes.CreateNewPostInNode,
 		)
 
 		r.With(
